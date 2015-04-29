@@ -11,7 +11,7 @@ var Swivel = function Swivel(config) {
 /**
  * Swivel prototype
  */
-var proto = Swivel.prototype;
+var SwivelPrototype = Swivel.prototype;
 
 /**
  * Create a new Builder instance
@@ -19,6 +19,14 @@ var proto = Swivel.prototype;
  * @param String $slug
  * @return Builder
  */
-proto.forFeature = function forFeature() { };
-proto.invoke = function invoke() { };
-proto.setBucket = function setBucket() { };
+SwivelPrototype.forFeature = function forFeature() {
+
+};
+
+SwivelPrototype.invoke = function invoke() {
+
+};
+
+SwivelPrototype.setBucket = function setBucket() {
+
+};
