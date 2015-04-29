@@ -1,0 +1,36 @@
+{
+  "name": "swiveljs",
+  "version": "0.0.1",
+  "description": "Strategy driven, segmented feature toggles",
+  "main": "dist/swivel.js",
+  "scripts": {
+    "test": "grunt test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/zumba/swiveljs.git"
+  },
+  "keywords": [
+    "feature",
+    "flag",
+    "toggle",
+    "strategy",
+    "ab"
+  ],
+  "author": "Stephen Young <stephen.young@zumba.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/zumba/swiveljs/issues"
+  },
+  "homepage": "https://github.com/zumba/swiveljs",
+  "devDependencies": {
+    "grunt": "^0.4.5",
+    "grunt-contrib-clean": "^0.6.0",
+    "grunt-contrib-concat": "^0.5.0",
+    "grunt-contrib-jasmine": "^0.7.0",
+    "grunt-contrib-jshint": "^0.10.0",
+    "grunt-contrib-uglify": "^0.5.1",
+    "grunt-wrap": "^0.3.0",
+    "lodash": "^2.4.1"
+  }
+}
