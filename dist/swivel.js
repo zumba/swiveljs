@@ -12,16 +12,20 @@
     /**
      * Swivel constructor
      */
-    var Swivel = function Swivel() {
+    var Swivel = function Swivel(config) {
         if (!(this instanceof Swivel)) {
-            return new Swivel();
+            return new Swivel(config);
         }
     };
     
     /**
      * Swivel prototype
      */
-    Swivel.prototype = { };
+    var proto = Swivel.prototype;
+    
+    proto.forFeature = function forFeature() { };
+    proto.invoke = function invoke() { };
+    proto.setBucket = function setBucket() { };
     
     /**
      * Exports script adapted from lodash v2.4.1 Modern Build
