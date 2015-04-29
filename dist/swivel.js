@@ -23,6 +23,12 @@
      */
     var proto = Swivel.prototype;
     
+    /**
+     * Create a new Builder instance
+     *
+     * @param String $slug
+     * @return Builder
+     */
     proto.forFeature = function forFeature() { };
     proto.invoke = function invoke() { };
     proto.setBucket = function setBucket() { };

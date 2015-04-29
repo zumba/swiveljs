@@ -19,6 +19,6 @@ var proto = Swivel.prototype;
  * @param String $slug
  * @return Builder
  */
-proto.forFeature = function forFeature(slug) { };
+proto.forFeature = function forFeature() { };
 proto.invoke = function invoke() { };
 proto.setBucket = function setBucket() { };
