@@ -1,0 +1,15 @@
+{
+    "uglify" : {
+        "options" : {
+            "mangle" : true,
+            "compress" : { "drop_console": true },
+            "sourceMap" : true,
+            "preserveComments" : false,
+            "banner" : "/**\n * SwivelJS v<%= pkg.version %> - <%= grunt.template.today('yyyy-mm-dd') %>\n * <%= pkg.description %>\n *\n * Copyright (c) <%= grunt.template.today('yyyy') %> Zumba&reg;\n * Licensed <%= pkg.license %>\n */\n",
+            "drop_console" : true
+        },
+        "dist" : {
+            "files" : { "dist/swivel.min.js" : ["dist/swivel.js"] }
+        }
+    }
+}

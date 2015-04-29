@@ -1,0 +1,13 @@
+{
+    "wrap" : {
+        "files" : {
+            "src" : ["dist/swivel.js"],
+            "dest" : "dist/swivel.js",
+            "options" : {
+                "seperator" : "\n",
+                "indent" : "    ",
+                "wrapper" : [";(function SwivelJS(undefined) {\n    'use strict';", "}.call(this));"]
+            }
+        }
+    }
+}
