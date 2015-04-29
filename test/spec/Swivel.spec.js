@@ -3,9 +3,9 @@
     "use strict";
 
     /**
-     * Swivel API test suite
+     * Swivel test suite
      */
-    describe("Swivel API", function() {
+    describe("Swivel", function() {
         describe("Constructor", function() {
             it("should allow the use of 'new'", function() {
                 expect(new Swivel() instanceof Swivel).toBe(true);

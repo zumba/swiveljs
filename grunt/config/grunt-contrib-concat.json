@@ -9,7 +9,6 @@
             "src" : [
                 "src/globals.js",
                 "src/Swivel/**.js",
-                "src/api.js",
                 "src/export.js"
             ],
             "dest" : "dist/swivel.js"
