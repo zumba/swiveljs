@@ -8,6 +8,8 @@ var FeatureMap = function FeatureMap(map) {
     this.map = parse(map);
 };
 
+FeatureMap.DELIMITER = '.';
+
 /**
  * Used by reduceToBitmask
  *
