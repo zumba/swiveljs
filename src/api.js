@@ -2,9 +2,9 @@
 /**
  * Swivel constructor
  */
-var Swivel = function Swivel() {
+var Swivel = function Swivel(config) {
     if (!(this instanceof Swivel)) {
-        return new Swivel();
+        return new Swivel(config);
     }
 };
 
