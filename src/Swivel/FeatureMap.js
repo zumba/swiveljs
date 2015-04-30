@@ -111,19 +111,52 @@ FeatureMapPrototype.enabled = function enabled(slug, index) {
 };
 
 /**
- * @todo
+ * Compare featureMap to this instance and return a new FeatureMap.
+ *
+ * Returned object will contain only the elements that match between the two maps.
+ *
  * @param FeatureMap featureMap
  * @return FeatureMap
  */
-FeatureMapPrototype.intersect = function intersect(/* map1, map2, ... */) { };
+FeatureMapPrototype.intersect = function intersect(featureMap) {
+    var base = this.map;
+    var compared = featureMap.map;
+    var intersect = {};
+    var key;
+
+    for (key in compared) {
+        if (compared.hasOwnProperty(key) && base[key] === compared[key]) {
+            intersect[key] = compared[key];
+        }
+    }
+    return new FeatureMap(intersect);
+};
 
 
 /**
- * @todo
- * @param FeatureMap featureMap
+ * Merge this map with another map and return a new FeatureMap
+ *
+ * Values in featureMap will overwrite values in this instance.  Any number of additional maps may
+ * be passed to this method, i.e. map->merge(map2, map3, map4, ...);
+ *
+ * @param FeatureMap map
  * @return FeatureMap
  */
-FeatureMapPrototype.merge = function merge(/* map1, map2, ... */) { };
+FeatureMapPrototype.merge = function merge(/* map1, map2, ... */) {
+    return new FeatureMap(reduce.call(arguments, overwrite, this.map));
+};
+
+/**
+ * Used by reduceToBitmask
+ *
+ * @param Number mask
+ * @param Number index
+ * @return Number
+ */
+var bitmaskIterator = function bitmaskIterator(mask, index) {
+    return mask | 1 << --index;
+};
+
 /**
  * Used to reduce masks when adding maps.
  *
@@ -144,12 +177,19 @@ var combineMasks = function(data, featureMap) {
 };
 
 /**
- * Used by reduceToBitmask
+ * Used to reduce masks when merging maps.
  *
- * @param Number mask
- * @param Number index
- * @return Number
+ * @param Object data
+ * @param FeatureMap featureMap
+ * @return Object
  */
-var bitmaskIterator = function bitmaskIterator(mask, index) {
-    return mask | 1 << --index;
+var overwrite = function(data, featureMap) {
+    var key;
+    var map = featureMap.map;
+    for (key in map) {
+        if (map.hasOwnProperty(key)) {
+            data[key] = map[key];
+        }
+    }
+    return data;
 };
