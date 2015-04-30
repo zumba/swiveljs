@@ -38,7 +38,6 @@ SwivelPrototype.forFeature = function forFeature(slug) {
  * @return mixed
  */
 SwivelPrototype.invoke = function invoke(slug, a, b) {
-    var DELIMITER = FeatureMap.DELIMITER;
     var parts = slug.split(DELIMITER);
     return this.forFeature(parts.shift())
         .addBehavior(parts.join(DELIMITER), a)

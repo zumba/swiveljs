@@ -8,9 +8,8 @@
 var Builder = function Builder(slug, bucket) {
     this.slug = slug;
     this.bucket = bucket;
-    this.behavior = null;
-    this.args = null;
-    this.defaultWaived = false;
+    this.waived = false;
+    setBehavior.call(this);
 };
 
 /**
@@ -18,7 +17,7 @@ var Builder = function Builder(slug, bucket) {
  *
  * @type String
  */
-Builder.DEFAULT_SLUG = '__swivel_default';
+var DEFAULT_SLUG = '__swivel_default';
 
 /**
  * Builder prototype
@@ -38,8 +37,7 @@ var BuilderPrototype = Builder.prototype;
 BuilderPrototype.addBehavior = function addBehavior(slug, strategy, args) {
     var behavior = this.getBehavior(slug, strategy);
     if (this.bucket.enabled(behavior)) {
-        this.behavior = behavior;
-        this.args = args || [];
+        setBehavior.call(this, behavior, args);
     }
     return this;
 };
@@ -53,12 +51,11 @@ BuilderPrototype.addBehavior = function addBehavior(slug, strategy, args) {
  * @param array args
  */
 BuilderPrototype.defaultBehavior = function defaultBehavior(strategy, args) {
-    if (this.defaultWaived) {
+    if (this.waived) {
         throw 'Defined a default behavior after `noDefault` was called.';
     }
     if (!this.behavior) {
-        this.behavior = this.getBehavior(strategy);
-        this.args = args || [];
+        setBehavior.call(this, this.getBehavior(strategy), args);
     }
     return this;
 };
@@ -84,24 +81,24 @@ BuilderPrototype.execute = function execute() {
 BuilderPrototype.getBehavior = function getBehavior(slug, strategy) {
     if (!strategy) {
         strategy = slug;
-        slug = Builder.DEFAULT_SLUG;
+        slug = DEFAULT_SLUG;
     }
 
     if (typeof strategy !== 'function') {
         strategy = getAnonymousStrategy(strategy);
     }
-    slug = this.slug + FeatureMap.DELIMITER + slug;
-    return new Behavior(slug, strategy);
+    return new Behavior(this.slug + DELIMITER + slug, strategy);
 };
 
 /**
  * Waive the default behavior for this feature.
  */
 BuilderPrototype.noDefault = function noDefault() {
-    if (this.behavior && this.behavior.slug === Builder.DEFAULT_SLUG) {
+    var behavior = this.behavior;
+    if (behavior && behavior.slug === DEFAULT_SLUG) {
         throw 'Called `noDefault` after a default behavior was defined.';
     }
-    this.defaultWaived = true;
+    this.waived = true;
     return this;
 };
 
@@ -115,4 +112,15 @@ var getAnonymousStrategy = function getAnonymousStrategy(value) {
     return function anonymousStrategy() {
         return value;
     };
+};
+
+/**
+ * Set the behavior and args.
+ *
+ * @param Behavior behavior
+ * @param array args
+ */
+var setBehavior = function setBehavior(behavior, args) {
+    this.behavior = behavior || null;
+    this.args = args || [];
 };

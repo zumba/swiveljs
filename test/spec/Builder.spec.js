@@ -8,7 +8,6 @@
     describe("Builder", function() {
         var Builder = Swivel.Builder;
         var Behavior = Swivel.Behavior;
-        var FeatureMap = Swivel.FeatureMap;
 
         describe("addBehavior", function() {
             it("will not add disabled behaviors", function() {
@@ -27,7 +26,7 @@
                 expect(bucket.enabled).toHaveBeenCalledWith(behavior);
                 expect(behavior.execute).not.toHaveBeenCalled();
                 expect(builder.behavior).toBeNull();
-                expect(builder.args).toBeNull();
+                expect(builder.args).toEqual([]);
             });
             it("will add an enabled behavior", function() {
                 var strategy = function() {};
@@ -73,7 +72,7 @@
                 var behavior = builder.getBehavior("a", function() {});
 
                 expect(behavior instanceof Behavior).toBe(true);
-                expect(behavior.slug).toBe("Test" + FeatureMap.DELIMITER + "a");
+                expect(behavior.slug).toBe("Test.a");
             });
         });
     });
