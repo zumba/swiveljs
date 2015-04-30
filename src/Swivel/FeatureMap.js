@@ -48,6 +48,13 @@ FeatureMapPrototype.add = function add(/* map1, map2, ... */) {
 };
 
 /**
+ * @todo
+ * @param FeatureMap featureMap
+ * @return FeatureMap
+ */
+FeatureMapPrototype.diff = function diff(/* map1, map2, ... */) { };
+
+/**
  * Check if a feature slug is enabled for a particular bucket index
  *
  * @param String slug
@@ -75,6 +82,20 @@ FeatureMapPrototype.enabled = function enabled(slug, index) {
     return true;
 };
 
+/**
+ * @todo
+ * @param FeatureMap featureMap
+ * @return FeatureMap
+ */
+FeatureMapPrototype.intersect = function intersect(/* map1, map2, ... */) { };
+
+
+/**
+ * @todo
+ * @param FeatureMap featureMap
+ * @return FeatureMap
+ */
+FeatureMapPrototype.merge = function merge(/* map1, map2, ... */) { };
 /**
  * Used to reduce masks when adding maps.
  *
