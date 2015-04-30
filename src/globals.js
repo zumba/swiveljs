@@ -1,4 +1,11 @@
 /**
+ * Delimiter
+ *
+ * @type String
+ */
+var DELIMITER = '.';
+
+/**
  * Native reduce
  *
  * @type Function

@@ -8,9 +8,6 @@ var FeatureMap = function FeatureMap(map) {
     this.map = FeatureMap.parse(map);
 };
 
-FeatureMap.DELIMITER = '.';
-
-
 /**
  * FeatureMap prototype
  */
@@ -88,7 +85,6 @@ FeatureMapPrototype.diff = function diff(featureMap) {
 FeatureMapPrototype.enabled = function enabled(slug, index) {
     var map = this.map;
     var key = '';
-    var DELIMITER = FeatureMap.DELIMITER;
     var list = slug.split(DELIMITER);
     var length = list.length;
     var i = 0;

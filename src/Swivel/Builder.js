@@ -87,7 +87,7 @@ BuilderPrototype.getBehavior = function getBehavior(slug, strategy) {
     if (typeof strategy !== 'function') {
         strategy = getAnonymousStrategy(strategy);
     }
-    slug = this.slug + FeatureMap.DELIMITER + slug;
+    slug = this.slug + DELIMITER + slug;
     return new Behavior(slug, strategy);
 };
 

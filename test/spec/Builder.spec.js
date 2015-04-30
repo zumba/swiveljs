@@ -8,7 +8,6 @@
     describe("Builder", function() {
         var Builder = Swivel.Builder;
         var Behavior = Swivel.Behavior;
-        var FeatureMap = Swivel.FeatureMap;
 
         describe("addBehavior", function() {
             it("will not add disabled behaviors", function() {
@@ -73,7 +72,7 @@
                 var behavior = builder.getBehavior("a", function() {});
 
                 expect(behavior instanceof Behavior).toBe(true);
-                expect(behavior.slug).toBe("Test" + FeatureMap.DELIMITER + "a");
+                expect(behavior.slug).toBe("Test.a");
             });
         });
     });
