@@ -29,10 +29,29 @@ SwivelPrototype.forFeature = function forFeature(slug) {
     return new Builder(slug, this.bucket);
 };
 
-SwivelPrototype.invoke = function invoke() {
-
+/**
+ * Syntactic sugar for creating simple feature toggles (ternary style)
+ *
+ * @param String slug
+ * @param mixed a
+ * @param mixed b
+ * @return mixed
+ */
+SwivelPrototype.invoke = function invoke(slug, a, b) {
+    var parts = slug.split(DELIMITER);
+    return this.forFeature(parts.shift())
+        .addBehavior(parts.join(DELIMITER), a)
+        .defaultBehavior(b)
+        .execute();
 };
 
-SwivelPrototype.setBucket = function setBucket() {
-
+/**
+ * Set the Swivel Bucket
+ *
+ * @param Bucket bucket
+ * @return Swivel
+ */
+SwivelPrototype.setBucket = function setBucket(bucket) {
+    this.bucket = bucket;
+    return this;
 };

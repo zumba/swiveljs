@@ -5,34 +5,13 @@
  * @param Object map
  */
 var FeatureMap = function FeatureMap(map) {
-    this.map = FeatureMap.parse(map);
+    this.map = parse(map);
 };
-
-FeatureMap.DELIMITER = '.';
-
 
 /**
  * FeatureMap prototype
  */
 var FeatureMapPrototype = FeatureMap.prototype;
-
-/**
- * Parse a human readable map into a map of bitmasks
- *
- * @param Object map
- * @return Object
- */
-FeatureMap.parse = function parse(map) {
-    var parsed = {};
-    var key, list;
-    for (key in map) {
-        if (map.hasOwnProperty(key)) {
-            list = map[key];
-            parsed[key] = isArray(list) ? list.reduce(bitmaskIterator, 0) : list;
-        }
-    }
-    return parsed;
-};
 
 /**
  * Merge this map with another map and return a new one.
@@ -48,6 +27,37 @@ FeatureMapPrototype.add = function add(/* map1, map2, ... */) {
 };
 
 /**
+ * Compare a FeatureMap to this instance and return a new FeatureMap.
+ *
+ * Returned object will contain only the elements that differ between the two maps. If a feature
+ * with the same key has different buckets, the buckets from the passed-in FeatureMap will be in the
+ * new object.
+ *
+ * @param FeatureMap featureMap
+ * @return FeatureMap
+ */
+FeatureMapPrototype.diff = function diff(featureMap) {
+    var base = this.map;
+    var compared = featureMap.map;
+    var data = {};
+    var key;
+
+    for (key in compared) {
+        if (compared.hasOwnProperty(key) && (base[key] === undefined || base[key] !== compared[key])) {
+            data[key] = compared[key];
+        }
+    }
+
+    for (key in base) {
+        if (base.hasOwnProperty(key) && compared[key] === undefined) {
+            data[key] = base[key];
+        }
+    }
+
+    return new FeatureMap(data);
+};
+
+/**
  * Check if a feature slug is enabled for a particular bucket index
  *
  * @param String slug
@@ -57,7 +67,6 @@ FeatureMapPrototype.add = function add(/* map1, map2, ... */) {
 FeatureMapPrototype.enabled = function enabled(slug, index) {
     var map = this.map;
     var key = '';
-    var DELIMITER = FeatureMap.DELIMITER;
     var list = slug.split(DELIMITER);
     var length = list.length;
     var i = 0;
@@ -73,6 +82,53 @@ FeatureMapPrototype.enabled = function enabled(slug, index) {
         }
     }
     return true;
+};
+
+/**
+ * Compare featureMap to this instance and return a new FeatureMap.
+ *
+ * Returned object will contain only the elements that match between the two maps.
+ *
+ * @param FeatureMap featureMap
+ * @return FeatureMap
+ */
+FeatureMapPrototype.intersect = function intersect(featureMap) {
+    var base = this.map;
+    var compared = featureMap.map;
+    var data = {};
+    var key;
+
+    for (key in compared) {
+        if (compared.hasOwnProperty(key) && base[key] === compared[key]) {
+            data[key] = compared[key];
+        }
+    }
+    return new FeatureMap(data);
+};
+
+
+/**
+ * Merge this map with another map and return a new FeatureMap
+ *
+ * Values in featureMap will overwrite values in this instance.  Any number of additional maps may
+ * be passed to this method, i.e. map->merge(map2, map3, map4, ...);
+ *
+ * @param FeatureMap map
+ * @return FeatureMap
+ */
+FeatureMapPrototype.merge = function merge(/* map1, map2, ... */) {
+    return new FeatureMap(reduce.call(arguments, overwrite, this.map));
+};
+
+/**
+ * Used by reduceToBitmask
+ *
+ * @param Number mask
+ * @param Number index
+ * @return Number
+ */
+var bitmaskIterator = function bitmaskIterator(mask, index) {
+    return mask | 1 << --index;
 };
 
 /**
@@ -95,12 +151,37 @@ var combineMasks = function(data, featureMap) {
 };
 
 /**
- * Used by reduceToBitmask
+ * Used to reduce masks when merging maps.
  *
- * @param Number mask
- * @param Number index
- * @return Number
+ * @param Object data
+ * @param FeatureMap featureMap
+ * @return Object
  */
-var bitmaskIterator = function bitmaskIterator(mask, index) {
-    return mask | 1 << --index;
+var overwrite = function(data, featureMap) {
+    var key;
+    var map = featureMap.map;
+    for (key in map) {
+        if (map.hasOwnProperty(key)) {
+            data[key] = map[key];
+        }
+    }
+    return data;
+};
+
+/**
+ * Parse a human readable map into a map of bitmasks
+ *
+ * @param Object map
+ * @return Object
+ */
+var parse = function parse(map) {
+    var parsed = {};
+    var key, list;
+    for (key in map) {
+        if (map.hasOwnProperty(key)) {
+            list = map[key];
+            parsed[key] = isArray(list) ? list.reduce(bitmaskIterator, 0) : list;
+        }
+    }
+    return parsed;
 };
