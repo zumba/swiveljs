@@ -48,11 +48,39 @@ FeatureMapPrototype.add = function add(/* map1, map2, ... */) {
 };
 
 /**
- * @todo
+ * Compare a FeatureMap to this instance and return a new FeatureMap.
+ *
+ * Returned object will contain only the elements that differ between the two maps. If a feature
+ * with the same key has different buckets, the buckets from the passed-in FeatureMap will be in the
+ * new object.
+ *
  * @param FeatureMap featureMap
  * @return FeatureMap
  */
-FeatureMapPrototype.diff = function diff(/* map1, map2, ... */) { };
+FeatureMapPrototype.diff = function diff(featureMap) {
+    var base = this.map;
+    var compared = featureMap.map;
+    var diff = {};
+    var key;
+
+    for (key in compared) {
+        if (compared.hasOwnProperty(key)) {
+            if (base[key] === undefined || base[key] !== compared[key]) {
+                diff[key] = compared[key];
+            }
+        }
+    }
+
+    for (key in base) {
+        if (base.hasOwnProperty(key)) {
+            if (compared[key] === undefined) {
+                diff[key] = base[key];
+            }
+        }
+    }
+
+    return new FeatureMap(diff);
+};
 
 /**
  * Check if a feature slug is enabled for a particular bucket index
