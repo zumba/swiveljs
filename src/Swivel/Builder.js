@@ -8,9 +8,8 @@
 var Builder = function Builder(slug, bucket) {
     this.slug = slug;
     this.bucket = bucket;
-    this.behavior = null;
-    this.args = null;
     this.waived = false;
+    setBehavior.call(this);
 };
 
 /**
@@ -38,8 +37,7 @@ var BuilderPrototype = Builder.prototype;
 BuilderPrototype.addBehavior = function addBehavior(slug, strategy, args) {
     var behavior = this.getBehavior(slug, strategy);
     if (this.bucket.enabled(behavior)) {
-        this.behavior = behavior;
-        this.args = args || [];
+        setBehavior.call(this, behavior, args);
     }
     return this;
 };
@@ -57,8 +55,7 @@ BuilderPrototype.defaultBehavior = function defaultBehavior(strategy, args) {
         throw 'Defined a default behavior after `noDefault` was called.';
     }
     if (!this.behavior) {
-        this.behavior = this.getBehavior(strategy);
-        this.args = args || [];
+        setBehavior.call(this, this.getBehavior(strategy), args);
     }
     return this;
 };
@@ -116,4 +113,15 @@ var getAnonymousStrategy = function getAnonymousStrategy(value) {
     return function anonymousStrategy() {
         return value;
     };
+};
+
+/**
+ * Set the behavior and args.
+ *
+ * @param Behavior behavior
+ * @param array args
+ */
+var setBehavior = function setBehavior(behavior, args) {
+    this.behavior = behavior || null;
+    this.args = args || [];
 };

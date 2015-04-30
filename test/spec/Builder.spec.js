@@ -27,7 +27,7 @@
                 expect(bucket.enabled).toHaveBeenCalledWith(behavior);
                 expect(behavior.execute).not.toHaveBeenCalled();
                 expect(builder.behavior).toBeNull();
-                expect(builder.args).toBeNull();
+                expect(builder.args).toEqual([]);
             });
             it("will add an enabled behavior", function() {
                 var strategy = function() {};
