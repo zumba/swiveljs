@@ -1,4 +1,11 @@
 /**
+ * Native reduce
+ *
+ * @type Function
+ */
+var reduce = Array.prototype.reduce;
+
+/**
  * @type Function
  */
 var toString = Object.prototype.toString;
