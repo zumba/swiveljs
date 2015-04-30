@@ -5,10 +5,28 @@
  * @param Object map
  */
 var FeatureMap = function FeatureMap(map) {
-    this.map = parse(map);
+    this.map = FeatureMap.parse(map);
 };
 
 FeatureMap.DELIMITER = '.';
+
+/**
+ * Parse a human readable map into a map of bitmasks
+ *
+ * @param Object map
+ * @return Object
+ */
+FeatureMap.parse = function parse(map) {
+    var parsed = {};
+    var key, list;
+    for (key in map) {
+        if (map.hasOwnProperty(key)) {
+            list = map[key];
+            parsed[key] = isArray(list) ? list.reduce(bitmaskIterator, 0) : list;
+        }
+    }
+    return parsed;
+};
 
 /**
  * Used by reduceToBitmask
@@ -18,36 +36,5 @@ FeatureMap.DELIMITER = '.';
  * @return Number
  */
 var bitmaskIterator = function bitmaskIterator(mask, index) {
-    return mask | (1 << (index - 1));
-};
-
-/**
- * Reduce an array of numbers to a bitmask if `list` is an array. Otherwise, will just return `list`
- *
- * @param mixed list
- * @return mixed bitmask
- */
-var reduceToBitmask = function reduceToBitmask(list) {
-    if (!isArray(list)) {
-        return list;
-    }
-
-    return list.reduce(bitmaskIterator);
-};
-
-/**
- * Parse a human readable map into a map of bitmasks
- *
- * @param Object map
- * @return Object
- */
-var parse = function parse(map) {
-    var parsed = {};
-    var key;
-    for (key in map) {
-        if (map.hasOwnProperty(key)) {
-            parsed[key] = reduceToBitmask(map[key]);
-        }
-    }
-    return parsed;
+    return mask | 1 << --index;
 };
