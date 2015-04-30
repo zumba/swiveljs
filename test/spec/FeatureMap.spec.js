@@ -125,5 +125,33 @@
                 expect(map6.enabled("Test.version.a", 5)).toBe(false);
             });
         });
+        describe("intersect", function() {
+            it("should find the intersection between two maps and return a new map", function() {
+                var map1 = new FeatureMap({ a : [1,2,3], b : [4,5,6] });
+                var map2 = new FeatureMap({ a : [1,2,3], b : [4,5,6] });
+                expect(map1.intersect(map2).map).toEqual({
+                    a : Bucket.FIRST | Bucket.SECOND | Bucket.THIRD,
+                    b : Bucket.FOURTH | Bucket.FIFTH | Bucket.SIXTH
+                });
+
+                var map3 = new FeatureMap({ a : [1,2], b : [4,5,6] });
+                var map4 = new FeatureMap({ a : [1,2,3], b : [4,5,6] });
+                expect(map3.intersect(map4).map).toEqual({
+                    b : Bucket.FOURTH | Bucket.FIFTH | Bucket.SIXTH
+                });
+
+                var map5 = new FeatureMap({ a : [1,2,3], b : [4,5,6], c : [7] });
+                var map6 = new FeatureMap({ a : [2,3,4], b : [4,5,6] });
+                expect(map5.intersect(map6).map).toEqual({
+                    b : Bucket.FOURTH | Bucket.FIFTH | Bucket.SIXTH
+                });
+
+                var map7 = new FeatureMap({ a : [1,2,3], b : [4,5,6] });
+                var map8 = new FeatureMap({ a : [1,2,3], b : [9,8,7], d : [1] });
+                expect(map7.intersect(map8).map).toEqual({
+                     a : Bucket.FIRST | Bucket.SECOND | Bucket.THIRD
+                });
+            });
+        });
     });
 }());
