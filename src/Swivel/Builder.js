@@ -10,7 +10,7 @@ var Builder = function Builder(slug, bucket) {
     this.bucket = bucket;
     this.behavior = null;
     this.args = null;
-    this.defaultWaived = false;
+    this.waived = false;
 };
 
 /**
@@ -53,7 +53,7 @@ BuilderPrototype.addBehavior = function addBehavior(slug, strategy, args) {
  * @param array args
  */
 BuilderPrototype.defaultBehavior = function defaultBehavior(strategy, args) {
-    if (this.defaultWaived) {
+    if (this.waived) {
         throw 'Defined a default behavior after `noDefault` was called.';
     }
     if (!this.behavior) {
@@ -98,10 +98,11 @@ BuilderPrototype.getBehavior = function getBehavior(slug, strategy) {
  * Waive the default behavior for this feature.
  */
 BuilderPrototype.noDefault = function noDefault() {
-    if (this.behavior && this.behavior.slug === DEFAULT_SLUG) {
+    var behavior = this.behavior;
+    if (behavior && behavior.slug === DEFAULT_SLUG) {
         throw 'Called `noDefault` after a default behavior was defined.';
     }
-    this.defaultWaived = true;
+    this.waived = true;
     return this;
 };
 
