@@ -2,8 +2,9 @@
 /**
  * Bucket constructor
  */
-var Bucket = function Bucket() {
-
+var Bucket = function Bucket(featureMap, index) {
+    this.featureMap = featureMap;
+    this.index = index;
 };
 
 /**
@@ -20,3 +21,14 @@ Bucket.EIGHTH = 128;
 Bucket.NINTH = 256;
 Bucket.TENTH = 512;
 Bucket.ALL = 1023;
+
+
+/**
+ * Check if a behavior is enabled for a particular context/bucket combination
+ *
+ * @param Behavior behavior
+ * @return boolean
+ */
+Bucket.prototype.enabled = function enabled(behavior) {
+    return this.featureMap.enabled(behavior.slug, this.index);
+};
