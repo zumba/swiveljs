@@ -48,6 +48,34 @@ FeatureMapPrototype.add = function add(/* map1, map2, ... */) {
 };
 
 /**
+ * Check if a feature slug is enabled for a particular bucket index
+ *
+ * @param String slug
+ * @param Number index
+ * @return Boolean
+ */
+FeatureMapPrototype.enabled = function enabled(slug, index) {
+    var map = this.map;
+    var key = '';
+    var DELIMITER = FeatureMap.DELIMITER;
+    var list = slug.split(DELIMITER);
+    var length = list.length;
+    var i = 0;
+    var child;
+
+    index = 1 << index - 1;
+
+    for (; i < length; i++) {
+        child = list[i];
+        key += key ? DELIMITER + child : child;
+        if (!map[key] || !(map[key] & index)) {
+            return false;
+        }
+    }
+    return true;
+};
+
+/**
  * Used to reduce masks when adding maps.
  *
  * @param Object data

@@ -38,5 +38,59 @@
                 }
             });
         });
+        describe("enabled", function() {
+            it("should compare the slug to the map and indicate if the feature is enabled", function() {
+                var map1 = new FeatureMap({
+                    "Test" : [1], "Test.version" : [1], "Test.version.a" : [1]
+                });
+                expect(map1.enabled("Test", 1)).toBe(true);
+                expect(map1.enabled("Test.version", 1)).toBe(true);
+                expect(map1.enabled("Test.version.a", 1)).toBe(true);
+
+                var map2 = new FeatureMap({
+                    "Test" : [1], "Test.version" : [1], "Test.version.a" : []
+                });
+                expect(map2.enabled("Test", 1)).toBe(true);
+                expect(map2.enabled("Test.version", 1)).toBe(true);
+                expect(map2.enabled("Test.version.a", 1)).toBe(false);
+
+                var map3 = new FeatureMap({
+                    "Test" : [], "Test.version" : [1], "Test.version.a" : [1]
+                });
+                expect(map3.enabled("Test", 1)).toBe(false);
+                expect(map3.enabled("Test.version", 1)).toBe(false);
+                expect(map3.enabled("Test.version.a", 1)).toBe(false);
+
+                var map4 = new FeatureMap({
+                    "Test" : [1], "Test.version" : [], "Test.version.a" : [1]
+                });
+                expect(map4.enabled("Test", 1)).toBe(true);
+                expect(map4.enabled("Test.version", 1)).toBe(false);
+                expect(map4.enabled("Test.version.a", 1)).toBe(false);
+
+                var map5 = new FeatureMap({
+                    "Test" : [], "Test.version" : [], "Test.version.a" : []
+                });
+                expect(map5.enabled("Test", 1)).toBe(false);
+                expect(map5.enabled("Test.version", 1)).toBe(false);
+                expect(map5.enabled("Test.version.a", 1)).toBe(false);
+
+                var map6 = new FeatureMap({
+                    "Test" : [2,3,5], "Test.version" : [2,3], "Test.version.a" : [3]
+                });
+                expect(map6.enabled("Test", 1)).toBe(false);
+                expect(map6.enabled("Test", 2)).toBe(true);
+                expect(map6.enabled("Test", 3)).toBe(true);
+                expect(map6.enabled("Test", 5)).toBe(true);
+                expect(map6.enabled("Test.version", 1)).toBe(false);
+                expect(map6.enabled("Test.version", 2)).toBe(true);
+                expect(map6.enabled("Test.version", 3)).toBe(true);
+                expect(map6.enabled("Test.version", 5)).toBe(false);
+                expect(map6.enabled("Test.version.a", 1)).toBe(false);
+                expect(map6.enabled("Test.version.a", 2)).toBe(false);
+                expect(map6.enabled("Test.version.a", 3)).toBe(true);
+                expect(map6.enabled("Test.version.a", 5)).toBe(false);
+            });
+        });
     });
 }());
