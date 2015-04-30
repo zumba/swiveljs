@@ -1,4 +1,12 @@
 /**
+ * Individual constructors
+ */
+Swivel.Behavior = Behavior;
+Swivel.Bucket = Bucket;
+Swivel.Builder = Builder;
+Swivel.FeatureMap = FeatureMap;
+
+/**
  * Exports script adapted from lodash v2.4.1 Modern Build
  *
  * @see http://lodash.com/

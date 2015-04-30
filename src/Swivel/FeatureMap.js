@@ -5,10 +5,94 @@
  * @param Object map
  */
 var FeatureMap = function FeatureMap(map) {
-    this.map = parse(map);
+    this.map = FeatureMap.parse(map);
 };
 
 FeatureMap.DELIMITER = '.';
+
+
+/**
+ * FeatureMap prototype
+ */
+var FeatureMapPrototype = FeatureMap.prototype;
+
+/**
+ * Parse a human readable map into a map of bitmasks
+ *
+ * @param Object map
+ * @return Object
+ */
+FeatureMap.parse = function parse(map) {
+    var parsed = {};
+    var key, list;
+    for (key in map) {
+        if (map.hasOwnProperty(key)) {
+            list = map[key];
+            parsed[key] = isArray(list) ? list.reduce(bitmaskIterator, 0) : list;
+        }
+    }
+    return parsed;
+};
+
+/**
+ * Merge this map with another map and return a new one.
+ *
+ * Values in map param will be added to values in this instance. Any number of additional maps may
+ * be passed to this method, i.e. map.add(map2, map3, map4, ...);
+ *
+ * @param FeatureMap featureMap
+ * @return FeatureMap
+ */
+FeatureMapPrototype.add = function add(/* map1, map2, ... */) {
+    return new FeatureMap(reduce.call(arguments, combineMasks, this.map));
+};
+
+/**
+ * Check if a feature slug is enabled for a particular bucket index
+ *
+ * @param String slug
+ * @param Number index
+ * @return Boolean
+ */
+FeatureMapPrototype.enabled = function enabled(slug, index) {
+    var map = this.map;
+    var key = '';
+    var DELIMITER = FeatureMap.DELIMITER;
+    var list = slug.split(DELIMITER);
+    var length = list.length;
+    var i = 0;
+    var child;
+
+    index = 1 << index - 1;
+
+    for (; i < length; i++) {
+        child = list[i];
+        key += key ? DELIMITER + child : child;
+        if (!map[key] || !(map[key] & index)) {
+            return false;
+        }
+    }
+    return true;
+};
+
+/**
+ * Used to reduce masks when adding maps.
+ *
+ * @param Object data
+ * @param FeatureMap featureMap
+ * @return Object
+ */
+var combineMasks = function(data, featureMap) {
+    var key, mask;
+    var map = featureMap.map;
+    for (key in map) {
+        if (map.hasOwnProperty(key)) {
+            mask = map[key];
+            data[key] = data[key] ? data[key] | mask : mask;
+        }
+    }
+    return data;
+};
 
 /**
  * Used by reduceToBitmask
@@ -18,36 +102,5 @@ FeatureMap.DELIMITER = '.';
  * @return Number
  */
 var bitmaskIterator = function bitmaskIterator(mask, index) {
-    return mask | (1 << (index - 1));
-};
-
-/**
- * Reduce an array of numbers to a bitmask if `list` is an array. Otherwise, will just return `list`
- *
- * @param mixed list
- * @return mixed bitmask
- */
-var reduceToBitmask = function reduceToBitmask(list) {
-    if (!isArray(list)) {
-        return list;
-    }
-
-    return list.reduce(bitmaskIterator);
-};
-
-/**
- * Parse a human readable map into a map of bitmasks
- *
- * @param Object map
- * @return Object
- */
-var parse = function parse(map) {
-    var parsed = {};
-    var key;
-    for (key in map) {
-        if (map.hasOwnProperty(key)) {
-            parsed[key] = reduceToBitmask(map[key]);
-        }
-    }
-    return parsed;
+    return mask | 1 << --index;
 };
