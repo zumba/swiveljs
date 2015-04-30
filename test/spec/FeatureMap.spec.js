@@ -11,7 +11,7 @@
         describe("parse", function() {
             it("should parse maps into maps of bitmasks", function() {
                 var map = { a :  [6, 7], "a.b" : [7] };
-                var parsed = FeatureMap.parse(map);
+                var parsed = (new FeatureMap(map)).map;
                 expect(parsed.a).toBe(32 | 64);
                 expect(parsed["a.b"]).toBe(64);
             });
