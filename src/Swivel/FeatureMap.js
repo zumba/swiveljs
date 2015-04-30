@@ -60,26 +60,22 @@ FeatureMapPrototype.add = function add(/* map1, map2, ... */) {
 FeatureMapPrototype.diff = function diff(featureMap) {
     var base = this.map;
     var compared = featureMap.map;
-    var diff = {};
+    var data = {};
     var key;
 
     for (key in compared) {
-        if (compared.hasOwnProperty(key)) {
-            if (base[key] === undefined || base[key] !== compared[key]) {
-                diff[key] = compared[key];
-            }
+        if (compared.hasOwnProperty(key) && (base[key] === undefined || base[key] !== compared[key])) {
+            data[key] = compared[key];
         }
     }
 
     for (key in base) {
-        if (base.hasOwnProperty(key)) {
-            if (compared[key] === undefined) {
-                diff[key] = base[key];
-            }
+        if (base.hasOwnProperty(key) && compared[key] === undefined) {
+            data[key] = base[key];
         }
     }
 
-    return new FeatureMap(diff);
+    return new FeatureMap(data);
 };
 
 /**
@@ -121,15 +117,15 @@ FeatureMapPrototype.enabled = function enabled(slug, index) {
 FeatureMapPrototype.intersect = function intersect(featureMap) {
     var base = this.map;
     var compared = featureMap.map;
-    var intersect = {};
+    var data = {};
     var key;
 
     for (key in compared) {
         if (compared.hasOwnProperty(key) && base[key] === compared[key]) {
-            intersect[key] = compared[key];
+            data[key] = compared[key];
         }
     }
-    return new FeatureMap(intersect);
+    return new FeatureMap(data);
 };
 
 

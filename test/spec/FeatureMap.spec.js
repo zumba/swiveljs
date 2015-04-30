@@ -38,6 +38,39 @@
                 }
             });
         });
+        describe("diff", function() {
+            it("should find the diff between two maps and return a new map", function() {
+                var map1 = new FeatureMap({ a : [1,2,3], b : [4,5,6] });
+                var map2 = new FeatureMap({ a : [1,2,3], b : [4,5,6] });
+                expect(map1.diff(map2).map).toEqual({});
+
+                var map3 = new FeatureMap({ a : [1,2], b : [4,5,6] });
+                var map4 = new FeatureMap({ a : [1,2,3], b : [4,5,6] });
+                expect(map3.diff(map4).map).toEqual({
+                    a : Bucket.FIRST | Bucket.SECOND | Bucket.THIRD
+                });
+
+                var map5 = new FeatureMap({ a : [1,2,3], b : [4,5,6], c : [7] });
+                var map6 = new FeatureMap({ a : [1,2,3], b : [4,5,6] });
+                expect(map5.diff(map6).map).toEqual({ c : Bucket.SEVENTH });
+
+                var map7 = new FeatureMap({ a : [1,2,3], b : [4,5,6] });
+                var map8 = new FeatureMap({ a : [1,2,3], b : [4,5,6], d : [1] });
+                expect(map7.diff(map8).map).toEqual({ d : Bucket.FIRST });
+
+                var map9 = new FeatureMap({ a : [1,2,3], b : [4,5,6], c : [7] });
+                var map10 = new FeatureMap({ a : [1,2,3], b : [4,5,6], d : [1] });
+                expect(map9.diff(map10).map).toEqual({
+                    c : Bucket.SEVENTH,
+                    d : Bucket.FIRST
+                });
+
+                var map11 = new FeatureMap({ a : [1,2,3], b : [4,5,6] });
+                var map12 = new FeatureMap({ a : [], b : [] });
+                expect(map11.diff(map12).map).toEqual({ a : 0, b : 0 });
+
+            });
+        });
         describe("enabled", function() {
             it("should compare the slug to the map and indicate if the feature is enabled", function() {
                 var map1 = new FeatureMap({
