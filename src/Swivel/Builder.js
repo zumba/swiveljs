@@ -18,7 +18,7 @@ var Builder = function Builder(slug, bucket) {
  *
  * @type String
  */
-Builder.DEFAULT_SLUG = '__swivel_default';
+var DEFAULT_SLUG = '__swivel_default';
 
 /**
  * Builder prototype
@@ -84,7 +84,7 @@ BuilderPrototype.execute = function execute() {
 BuilderPrototype.getBehavior = function getBehavior(slug, strategy) {
     if (!strategy) {
         strategy = slug;
-        slug = Builder.DEFAULT_SLUG;
+        slug = DEFAULT_SLUG;
     }
 
     if (typeof strategy !== 'function') {
@@ -98,7 +98,7 @@ BuilderPrototype.getBehavior = function getBehavior(slug, strategy) {
  * Waive the default behavior for this feature.
  */
 BuilderPrototype.noDefault = function noDefault() {
-    if (this.behavior && this.behavior.slug === Builder.DEFAULT_SLUG) {
+    if (this.behavior && this.behavior.slug === DEFAULT_SLUG) {
         throw 'Called `noDefault` after a default behavior was defined.';
     }
     this.defaultWaived = true;
