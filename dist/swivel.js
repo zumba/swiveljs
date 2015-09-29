@@ -1,7 +1,7 @@
 ;(function SwivelJS(undefined) {
     'use strict';
     /**
-     * SwivelJS v0.1.0 - 2015-04-30
+     * SwivelJS v0.1.1 - 2015-09-29
      * Strategy driven, segmented feature toggles
      *
      * Copyright (c) 2015 Zumba&reg;
@@ -195,7 +195,7 @@
      * @return Behavior
      */
     BuilderPrototype.getBehavior = function getBehavior(slug, strategy) {
-        if (!strategy) {
+        if (strategy === undefined) {
             strategy = slug;
             slug = DEFAULT_SLUG;
         }
