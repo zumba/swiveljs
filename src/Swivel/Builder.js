@@ -79,7 +79,7 @@ BuilderPrototype.execute = function execute() {
  * @return Behavior
  */
 BuilderPrototype.getBehavior = function getBehavior(slug, strategy) {
-    if (!strategy) {
+    if (strategy === undefined) {
         strategy = slug;
         slug = DEFAULT_SLUG;
     }
