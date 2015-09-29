@@ -74,6 +74,13 @@
                 expect(behavior instanceof Behavior).toBe(true);
                 expect(behavior.slug).toBe("Test.a");
             });
+            it("should allow falsey values and wrap them in a function", function() {
+                var builder = new Builder("Test", {});
+                var behavior = builder.getBehavior("a", 0);
+
+                expect(behavior instanceof Behavior).toBe(true);
+                expect(behavior.execute()).toBe(0);
+            });
         });
     });
 }());
