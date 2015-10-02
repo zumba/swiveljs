@@ -60,7 +60,7 @@ var objectTypes = {
      */
     if (typeof define === 'function' && typeof define.amd === 'object' && define.amd) {
         root.Swivel = Swivel;
-        define(function defineSwivel() { return Swivel; });
+        define('Swivel', function defineSwivel() { return Swivel; });
     } else if (freeExports && freeModule) {
         if (moduleExports) {
             (freeModule.exports = Swivel).Swivel = Swivel;
