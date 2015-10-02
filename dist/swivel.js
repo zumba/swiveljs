@@ -1,7 +1,7 @@
 ;(function SwivelJS(undefined) {
     'use strict';
     /**
-     * SwivelJS v0.1.1 - 2015-09-29
+     * SwivelJS v0.1.1 - 2015-10-02
      * Strategy driven, segmented feature toggles
      *
      * Copyright (c) 2015 Zumba&reg;
@@ -549,7 +549,7 @@
          */
         if (typeof define === 'function' && typeof define.amd === 'object' && define.amd) {
             root.Swivel = Swivel;
-            define(function defineSwivel() { return Swivel; });
+            define('Swivel', function defineSwivel() { return Swivel; });
         } else if (freeExports && freeModule) {
             if (moduleExports) {
                 (freeModule.exports = Swivel).Swivel = Swivel;
