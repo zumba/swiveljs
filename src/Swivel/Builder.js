@@ -1,5 +1,16 @@
 
 /**
+ * Set the behavior and args.
+ *
+ * @param Behavior behavior
+ * @param array args
+ */
+var setBehavior = function setBehavior(behavior, args) {
+    this.behavior = behavior || null;
+    this.args = args || [];
+};
+
+/**
  * Builder constructor
  *
  * @param String slug
@@ -43,6 +54,24 @@ BuilderPrototype.addBehavior = function addBehavior(slug, strategy, args) {
 };
 
 /**
+ * Add a value to be returned when the builder is executed.
+ *
+ * Value will only be returned if it is enabled for the user's bucket.
+ *
+ * @param String slug
+ * @param mixed value
+ */
+BuilderPrototype.addValue = function addValue(slug, value) {
+    var behavior = this.getBehavior(slug, function() {
+        return value;
+    });
+    if (this.bucket.enabled(behavior)) {
+        setBehavior.call(this, behavior);
+    }
+    return this;
+};
+
+/**
  * Add a default behavior.
  *
  * Will be used if all other behaviors are not enabled for the user's bucket.
@@ -61,21 +90,42 @@ BuilderPrototype.defaultBehavior = function defaultBehavior(strategy, args) {
 };
 
 /**
+ * Add a default value.
+ *
+ * Will be used if all other behaviors and values are not enabled for the user's bucket.
+ *
+ * @param mixed value
+ */
+BuilderPrototype.defaultValue = function defaultValue(value) {
+    if (this.waived) {
+        throw 'Defined a default value after `noDefault` was called.';
+    }
+    if (!this.behavior) {
+        var callable = function() {
+            return value;
+        };
+        setBehavior.call(this, this.getBehavior(callable));
+    }
+    return this;
+};
+
+/**
  * Execute the feature.
  *
  * @return mixed
  */
 BuilderPrototype.execute = function execute() {
-    return (this.behavior || this.getBehavior(null)).execute(this.args || []);
+    var behavior = this.behavior || this.getBehavior(function() { return null; });
+    return behavior.execute(this.args || []);
 };
 
 /**
  * Create and return a new Behavior.
  *
- * If strategy is not a function, it will be wraped in a closure that returns the strategy.
+ * The strategy parameter must be a valid callable function.
  *
  * @param String slug
- * @param mixed strategy
+ * @param Callable strategy
  * @return Behavior
  */
 BuilderPrototype.getBehavior = function getBehavior(slug, strategy) {
@@ -83,9 +133,8 @@ BuilderPrototype.getBehavior = function getBehavior(slug, strategy) {
         strategy = slug;
         slug = DEFAULT_SLUG;
     }
-
     if (typeof strategy !== 'function') {
-        strategy = getAnonymousStrategy(strategy);
+        throw 'Invalid callable passed to Builder.getBehavior().';
     }
     return new Behavior(this.slug + DELIMITER + slug, strategy);
 };
@@ -100,27 +149,4 @@ BuilderPrototype.noDefault = function noDefault() {
     }
     this.waived = true;
     return this;
-};
-
-/**
- * Wrapper for an anonymous strategy
- *
- * @param mixed value
- * @return Function
- */
-var getAnonymousStrategy = function getAnonymousStrategy(value) {
-    return function anonymousStrategy() {
-        return value;
-    };
-};
-
-/**
- * Set the behavior and args.
- *
- * @param Behavior behavior
- * @param array args
- */
-var setBehavior = function setBehavior(behavior, args) {
-    this.behavior = behavior || null;
-    this.args = args || [];
 };

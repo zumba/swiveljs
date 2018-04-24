@@ -1,3 +1,31 @@
+/**
+ * Used by reduceToBitmask
+ *
+ * @param Number mask
+ * @param Number index
+ * @return Number
+ */
+var bitmaskIterator = function bitmaskIterator(mask, index) {
+    return mask | 1 << --index;
+};
+
+/**
+ * Parse a human readable map into a map of bitmasks
+ *
+ * @param Object map
+ * @return Object
+ */
+var parse = function parse(map) {
+    var parsed = {};
+    var key, list;
+    for (key in map) {
+        if (map.hasOwnProperty(key)) {
+            list = map[key];
+            parsed[key] = isArray(list) ? list.reduce(bitmaskIterator, 0) : list;
+        }
+    }
+    return parsed;
+};
 
 /**
  * FeatureMap constructor
@@ -12,6 +40,25 @@ var FeatureMap = function FeatureMap(map) {
  * FeatureMap prototype
  */
 var FeatureMapPrototype = FeatureMap.prototype;
+
+/**
+ * Used to reduce masks when adding maps.
+ *
+ * @param Object data
+ * @param FeatureMap featureMap
+ * @return Object
+ */
+var combineMasks = function(data, featureMap) {
+    var key, mask;
+    var map = featureMap.map;
+    for (key in map) {
+        if (map.hasOwnProperty(key)) {
+            mask = map[key];
+            data[key] = data[key] ? data[key] | mask : mask;
+        }
+    }
+    return data;
+};
 
 /**
  * Merge this map with another map and return a new one.
@@ -106,50 +153,6 @@ FeatureMapPrototype.intersect = function intersect(featureMap) {
     return new FeatureMap(data);
 };
 
-
-/**
- * Merge this map with another map and return a new FeatureMap
- *
- * Values in featureMap will overwrite values in this instance.  Any number of additional maps may
- * be passed to this method, i.e. map->merge(map2, map3, map4, ...);
- *
- * @param FeatureMap map
- * @return FeatureMap
- */
-FeatureMapPrototype.merge = function merge(/* map1, map2, ... */) {
-    return new FeatureMap(reduce.call(arguments, overwrite, this.map));
-};
-
-/**
- * Used by reduceToBitmask
- *
- * @param Number mask
- * @param Number index
- * @return Number
- */
-var bitmaskIterator = function bitmaskIterator(mask, index) {
-    return mask | 1 << --index;
-};
-
-/**
- * Used to reduce masks when adding maps.
- *
- * @param Object data
- * @param FeatureMap featureMap
- * @return Object
- */
-var combineMasks = function(data, featureMap) {
-    var key, mask;
-    var map = featureMap.map;
-    for (key in map) {
-        if (map.hasOwnProperty(key)) {
-            mask = map[key];
-            data[key] = data[key] ? data[key] | mask : mask;
-        }
-    }
-    return data;
-};
-
 /**
  * Used to reduce masks when merging maps.
  *
@@ -169,19 +172,14 @@ var overwrite = function(data, featureMap) {
 };
 
 /**
- * Parse a human readable map into a map of bitmasks
+ * Merge this map with another map and return a new FeatureMap
  *
- * @param Object map
- * @return Object
+ * Values in featureMap will overwrite values in this instance.  Any number of additional maps may
+ * be passed to this method, i.e. map->merge(map2, map3, map4, ...);
+ *
+ * @param FeatureMap map
+ * @return FeatureMap
  */
-var parse = function parse(map) {
-    var parsed = {};
-    var key, list;
-    for (key in map) {
-        if (map.hasOwnProperty(key)) {
-            list = map[key];
-            parsed[key] = isArray(list) ? list.reduce(bitmaskIterator, 0) : list;
-        }
-    }
-    return parsed;
+FeatureMapPrototype.merge = function merge(/* map1, map2, ... */) {
+    return new FeatureMap(reduce.call(arguments, overwrite, this.map));
 };
