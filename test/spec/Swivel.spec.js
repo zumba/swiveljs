@@ -6,6 +6,8 @@
      * Swivel test suite
      */
     describe("Swivel", function() {
+        var Builder = Swivel.Builder;
+
         describe("Constructor", function() {
             it("should allow the use of 'new'", function() {
                 expect(new Swivel() instanceof Swivel).toBe(true);
@@ -15,6 +17,22 @@
                 /* jshint newcap: false */
                 expect(Swivel() instanceof Swivel).toBe(true);
                 /* jshint newcap: true */
+            });
+        });
+        describe("returnValue", function() {
+            it("should equal to default value", function() {
+                var swivel = new Swivel();
+                expect(swivel.returnValue("slug", "custom", "default")).toBe("default");
+            });
+            it("should equal to custom value", function() {
+                var swivel = new Swivel();
+                var forFeature = spyOn(swivel, [ "forFeature" ]);
+                var bucket = jasmine.createSpyObj("Bucket", [ "enabled" ]);
+                var builder = new Builder("Test", bucket);
+
+                bucket.enabled.and.returnValue(true);
+                forFeature.and.returnValue(builder);
+                expect(swivel.returnValue("slug", "custom", "default")).toBe("custom");
             });
         });
     });
