@@ -10,8 +10,9 @@ var Swivel = function Swivel(config) {
         config = {};
     }
     var map = config.map || {};
+    var callback = config.callback || function() {};
     var featureMap = map instanceof FeatureMap ? map : new FeatureMap(map);
-    this.bucket = new Bucket(featureMap, config.bucketIndex);
+    this.bucket = new Bucket(featureMap, config.bucketIndex, callback);
 };
 
 /**

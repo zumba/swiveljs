@@ -18,6 +18,18 @@
                 expect(Swivel() instanceof Swivel).toBe(true);
                 /* jshint newcap: true */
             });
+            it("should have a bucket with an empty callback function", function() {
+                var swivel = new Swivel({
+                    callback : function () {
+                        return "Test";
+                    }
+                });
+                expect(swivel.bucket.callback()).toBe("Test");
+            });
+            it("should have a bucket with a valid callback function", function() {
+                var swivel = new Swivel();
+                expect(swivel.bucket.callback()).toBe(undefined);
+            });
         });
         describe("returnValue", function() {
             it("should equal to default value", function() {

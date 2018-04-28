@@ -135,6 +135,13 @@
                 expect(behavior instanceof Behavior).toBe(true);
                 expect(behavior.execute()).toBe(0);
             });
+            it("should return behavior with builder slug regardless of getBehavior callback", function() {
+                var builder = new Builder("Test", {});
+                var behavior = builder.getBehavior("", function() { return "notTest"; });
+
+                expect(behavior instanceof Behavior).toBe(true);
+                expect(behavior.slug).toBe("Test");
+            });
         });
     });
 }());
