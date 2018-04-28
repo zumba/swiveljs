@@ -123,6 +123,13 @@
                 expect(map6.enabled("Test.version.a", 5)).toBe(false);
             });
         });
+        describe("slugExists", function() {
+            it("should return correct results", function() {
+                var map = new FeatureMap({ a : [1] });
+                expect(map.slugExists("a")).toBe(true);
+                expect(map.slugExists("b")).toBe(false);
+            });
+        });
         describe("intersect", function() {
             it("should find the intersection between two maps and return a new map", function() {
                 var map1 = new FeatureMap({ a : [1,2,3], b : [4,5,6] });

@@ -124,11 +124,25 @@ FeatureMapPrototype.enabled = function enabled(slug, index) {
     for (; i < length; i++) {
         child = list[i];
         key += key ? DELIMITER + child : child;
-        if (!map[key] || !(map[key] & index)) {
+
+        var isMissing = !this.slugExists(key);
+        var isDisabled = isMissing || !(map[key] & index);
+
+        if (isMissing || isDisabled) {
             return false;
         }
     }
     return true;
+};
+
+/**
+ * Check if a feature slug exists in the Map.
+ *
+ * @param String slug
+ * @return Boolean
+ */
+FeatureMapPrototype.slugExists = function slugExists(slug) {
+    return typeof this.map[slug] !== 'undefined';
 };
 
 /**
