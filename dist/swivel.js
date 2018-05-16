@@ -1,10 +1,10 @@
 ;(function SwivelJS(undefined) {
     'use strict';
     /**
-     * SwivelJS v0.1.1 - 2015-10-02
+     * SwivelJS v0.1.1 - 2018-04-23
      * Strategy driven, segmented feature toggles
      *
-     * Copyright (c) 2015 Zumba&reg;
+     * Copyright (c) 2018 Zumba&reg;
      * Licensed MIT
      */
     /* jshint freeze: false */
@@ -116,6 +116,17 @@
     
     
     /**
+     * Set the behavior and args.
+     *
+     * @param Behavior behavior
+     * @param array args
+     */
+    var setBehavior = function setBehavior(behavior, args) {
+        this.behavior = behavior || null;
+        this.args = args || [];
+    };
+    
+    /**
      * Builder constructor
      *
      * @param String slug
@@ -159,6 +170,24 @@
     };
     
     /**
+     * Add a value to be returned when the builder is executed.
+     *
+     * Value will only be returned if it is enabled for the user's bucket.
+     *
+     * @param String slug
+     * @param mixed value
+     */
+    BuilderPrototype.addValue = function addValue(slug, value) {
+        var behavior = this.getBehavior(slug, function() {
+            return value;
+        });
+        if (this.bucket.enabled(behavior)) {
+            setBehavior.call(this, behavior);
+        }
+        return this;
+    };
+    
+    /**
      * Add a default behavior.
      *
      * Will be used if all other behaviors are not enabled for the user's bucket.
@@ -177,21 +206,42 @@
     };
     
     /**
+     * Add a default value.
+     *
+     * Will be used if all other behaviors and values are not enabled for the user's bucket.
+     *
+     * @param mixed value
+     */
+    BuilderPrototype.defaultValue = function defaultValue(value) {
+        if (this.waived) {
+            throw 'Defined a default value after `noDefault` was called.';
+        }
+        if (!this.behavior) {
+            var callable = function() {
+                return value;
+            };
+            setBehavior.call(this, this.getBehavior(callable));
+        }
+        return this;
+    };
+    
+    /**
      * Execute the feature.
      *
      * @return mixed
      */
     BuilderPrototype.execute = function execute() {
-        return (this.behavior || this.getBehavior(null)).execute(this.args || []);
+        var behavior = this.behavior || this.getBehavior(function() { return null; });
+        return behavior.execute(this.args || []);
     };
     
     /**
      * Create and return a new Behavior.
      *
-     * If strategy is not a function, it will be wraped in a closure that returns the strategy.
+     * The strategy parameter must be a valid callable function.
      *
      * @param String slug
-     * @param mixed strategy
+     * @param Callable strategy
      * @return Behavior
      */
     BuilderPrototype.getBehavior = function getBehavior(slug, strategy) {
@@ -199,9 +249,8 @@
             strategy = slug;
             slug = DEFAULT_SLUG;
         }
-    
         if (typeof strategy !== 'function') {
-            strategy = getAnonymousStrategy(strategy);
+            throw 'Invalid callable passed to Builder.getBehavior().';
         }
         return new Behavior(this.slug + DELIMITER + slug, strategy);
     };
@@ -219,28 +268,33 @@
     };
     
     /**
-     * Wrapper for an anonymous strategy
+     * Used by reduceToBitmask
      *
-     * @param mixed value
-     * @return Function
+     * @param Number mask
+     * @param Number index
+     * @return Number
      */
-    var getAnonymousStrategy = function getAnonymousStrategy(value) {
-        return function anonymousStrategy() {
-            return value;
-        };
+    var bitmaskIterator = function bitmaskIterator(mask, index) {
+        return mask | 1 << --index;
     };
     
     /**
-     * Set the behavior and args.
+     * Parse a human readable map into a map of bitmasks
      *
-     * @param Behavior behavior
-     * @param array args
+     * @param Object map
+     * @return Object
      */
-    var setBehavior = function setBehavior(behavior, args) {
-        this.behavior = behavior || null;
-        this.args = args || [];
+    var parse = function parse(map) {
+        var parsed = {};
+        var key, list;
+        for (key in map) {
+            if (map.hasOwnProperty(key)) {
+                list = map[key];
+                parsed[key] = isArray(list) ? list.reduce(bitmaskIterator, 0) : list;
+            }
+        }
+        return parsed;
     };
-    
     
     /**
      * FeatureMap constructor
@@ -255,6 +309,25 @@
      * FeatureMap prototype
      */
     var FeatureMapPrototype = FeatureMap.prototype;
+    
+    /**
+     * Used to reduce masks when adding maps.
+     *
+     * @param Object data
+     * @param FeatureMap featureMap
+     * @return Object
+     */
+    var combineMasks = function(data, featureMap) {
+        var key, mask;
+        var map = featureMap.map;
+        for (key in map) {
+            if (map.hasOwnProperty(key)) {
+                mask = map[key];
+                data[key] = data[key] ? data[key] | mask : mask;
+            }
+        }
+        return data;
+    };
     
     /**
      * Merge this map with another map and return a new one.
@@ -349,50 +422,6 @@
         return new FeatureMap(data);
     };
     
-    
-    /**
-     * Merge this map with another map and return a new FeatureMap
-     *
-     * Values in featureMap will overwrite values in this instance.  Any number of additional maps may
-     * be passed to this method, i.e. map->merge(map2, map3, map4, ...);
-     *
-     * @param FeatureMap map
-     * @return FeatureMap
-     */
-    FeatureMapPrototype.merge = function merge(/* map1, map2, ... */) {
-        return new FeatureMap(reduce.call(arguments, overwrite, this.map));
-    };
-    
-    /**
-     * Used by reduceToBitmask
-     *
-     * @param Number mask
-     * @param Number index
-     * @return Number
-     */
-    var bitmaskIterator = function bitmaskIterator(mask, index) {
-        return mask | 1 << --index;
-    };
-    
-    /**
-     * Used to reduce masks when adding maps.
-     *
-     * @param Object data
-     * @param FeatureMap featureMap
-     * @return Object
-     */
-    var combineMasks = function(data, featureMap) {
-        var key, mask;
-        var map = featureMap.map;
-        for (key in map) {
-            if (map.hasOwnProperty(key)) {
-                mask = map[key];
-                data[key] = data[key] ? data[key] | mask : mask;
-            }
-        }
-        return data;
-    };
-    
     /**
      * Used to reduce masks when merging maps.
      *
@@ -412,21 +441,16 @@
     };
     
     /**
-     * Parse a human readable map into a map of bitmasks
+     * Merge this map with another map and return a new FeatureMap
      *
-     * @param Object map
-     * @return Object
+     * Values in featureMap will overwrite values in this instance.  Any number of additional maps may
+     * be passed to this method, i.e. map->merge(map2, map3, map4, ...);
+     *
+     * @param FeatureMap map
+     * @return FeatureMap
      */
-    var parse = function parse(map) {
-        var parsed = {};
-        var key, list;
-        for (key in map) {
-            if (map.hasOwnProperty(key)) {
-                list = map[key];
-                parsed[key] = isArray(list) ? list.reduce(bitmaskIterator, 0) : list;
-            }
-        }
-        return parsed;
+    FeatureMapPrototype.merge = function merge(/* map1, map2, ... */) {
+        return new FeatureMap(reduce.call(arguments, overwrite, this.map));
     };
     
     
@@ -473,6 +497,24 @@
         return this.forFeature(parts.shift())
             .addBehavior(parts.join(DELIMITER), a)
             .defaultBehavior(b)
+            .execute();
+    };
+    
+    /**
+     * Syntactic sugar for creating simple feature toggles (ternary style)
+     *
+     * Uses Builder::addValue
+     *
+     * @param String slug
+     * @param mixed a
+     * @param mixed b
+     * @return mixed
+     */
+    SwivelPrototype.returnValue = function returnValue(slug, a, b) {
+        var parts = slug.split(DELIMITER);
+        return this.forFeature(parts.shift())
+            .addValue(parts.join(DELIMITER), a)
+            .defaultValue(b)
             .execute();
     };
     

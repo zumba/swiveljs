@@ -46,6 +46,24 @@ SwivelPrototype.invoke = function invoke(slug, a, b) {
 };
 
 /**
+ * Syntactic sugar for creating simple feature toggles (ternary style)
+ *
+ * Uses Builder::addValue
+ *
+ * @param String slug
+ * @param mixed a
+ * @param mixed b
+ * @return mixed
+ */
+SwivelPrototype.returnValue = function returnValue(slug, a, b) {
+    var parts = slug.split(DELIMITER);
+    return this.forFeature(parts.shift())
+        .addValue(parts.join(DELIMITER), a)
+        .defaultValue(b)
+        .execute();
+};
+
+/**
  * Set the Swivel Bucket
  *
  * @param Bucket bucket
