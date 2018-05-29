@@ -136,7 +136,8 @@ BuilderPrototype.getBehavior = function getBehavior(slug, strategy) {
     if (typeof strategy !== 'function') {
         throw 'Invalid callable passed to Builder.getBehavior().';
     }
-    return new Behavior(this.slug + DELIMITER + slug, strategy);
+    slug = !slug ? this.slug : this.slug + DELIMITER + slug;
+    return new Behavior(slug, strategy);
 };
 
 /**
