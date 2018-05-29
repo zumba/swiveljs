@@ -1,7 +1,7 @@
 ;(function SwivelJS(undefined) {
     'use strict';
     /**
-     * SwivelJS v2.0.0 - 2018-05-16
+     * SwivelJS v2.1.0 - 2018-05-29
      * Strategy driven, segmented feature toggles
      *
      * Copyright (c) 2018 Zumba&reg;
@@ -99,9 +99,10 @@
     /**
      * Bucket constructor
      */
-    var Bucket = function Bucket(featureMap, index) {
+    var Bucket = function Bucket(featureMap, index, callback) {
         this.featureMap = featureMap;
         this.index = index;
+        this.callback = typeof callback === 'function' ? callback : function() {};
     };
     
     /**
@@ -111,7 +112,11 @@
      * @return boolean
      */
     Bucket.prototype.enabled = function enabled(behavior) {
-        return this.featureMap.enabled(behavior.slug, this.index);
+        var slug = behavior.slug;
+        if (!this.featureMap.slugExists(slug)) {
+            this.callback(slug);
+        }
+        return this.featureMap.enabled(slug, this.index);
     };
     
     
@@ -252,7 +257,8 @@
         if (typeof strategy !== 'function') {
             throw 'Invalid callable passed to Builder.getBehavior().';
         }
-        return new Behavior(this.slug + DELIMITER + slug, strategy);
+        slug = !slug ? this.slug : this.slug + DELIMITER + slug;
+        return new Behavior(slug, strategy);
     };
     
     /**
@@ -393,11 +399,25 @@
         for (; i < length; i++) {
             child = list[i];
             key += key ? DELIMITER + child : child;
-            if (!map[key] || !(map[key] & index)) {
+    
+            var isMissing = !this.slugExists(key);
+            var isDisabled = isMissing || !(map[key] & index);
+    
+            if (isMissing || isDisabled) {
                 return false;
             }
         }
         return true;
+    };
+    
+    /**
+     * Check if a feature slug exists in the Map.
+     *
+     * @param String slug
+     * @return Boolean
+     */
+    FeatureMapPrototype.slugExists = function slugExists(slug) {
+        return typeof this.map[slug] !== 'undefined';
     };
     
     /**
@@ -465,8 +485,9 @@
             config = {};
         }
         var map = config.map || {};
+        var callback = config.callback || function() {};
         var featureMap = map instanceof FeatureMap ? map : new FeatureMap(map);
-        this.bucket = new Bucket(featureMap, config.bucketIndex);
+        this.bucket = new Bucket(featureMap, config.bucketIndex, callback);
     };
     
     /**
