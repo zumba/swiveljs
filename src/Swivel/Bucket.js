@@ -2,9 +2,10 @@
 /**
  * Bucket constructor
  */
-var Bucket = function Bucket(featureMap, index) {
+var Bucket = function Bucket(featureMap, index, callback) {
     this.featureMap = featureMap;
     this.index = index;
+    this.callback = typeof callback === 'function' ? callback : function() {};
 };
 
 /**
@@ -14,5 +15,9 @@ var Bucket = function Bucket(featureMap, index) {
  * @return boolean
  */
 Bucket.prototype.enabled = function enabled(behavior) {
-    return this.featureMap.enabled(behavior.slug, this.index);
+    var slug = behavior.slug;
+    if (!this.featureMap.slugExists(slug)) {
+        this.callback(slug);
+    }
+    return this.featureMap.enabled(slug, this.index);
 };
