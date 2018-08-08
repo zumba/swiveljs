@@ -1,11 +1,14 @@
 /**
- * Used by reduceToBitmask
+ * Used by parse reducer
  *
  * @param Number mask
  * @param Number index
  * @return Number
  */
 var bitmaskIterator = function bitmaskIterator(mask, index) {
+    if (!index || parseInt(index, 10) === 0) {
+        return mask;
+    }
     return mask | 1 << --index;
 };
 
@@ -126,7 +129,7 @@ FeatureMapPrototype.enabled = function enabled(slug, index) {
         key += key ? DELIMITER + child : child;
 
         var isMissing = !this.slugExists(key);
-        var isDisabled = isMissing || !(map[key] & index);
+        var isDisabled = isMissing || !(parseInt(map[key], 10) & index);
 
         if (isMissing || isDisabled) {
             return false;

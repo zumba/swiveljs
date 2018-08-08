@@ -14,6 +14,18 @@
                 var parsed = (new FeatureMap(map)).map;
                 expect(parsed.a).toBe(32 | 64);
                 expect(parsed["a.b"]).toBe(64);
+
+                map = { a :  [""] };
+                parsed = (new FeatureMap(map)).map;
+                expect(parsed.a).toBe(0);
+
+                map = { a :  [0] };
+                parsed = (new FeatureMap(map)).map;
+                expect(parsed.a).toBe(0);
+
+                map = { a :  [0, 1] };
+                parsed = (new FeatureMap(map)).map;
+                expect(parsed.a).toBe(1);
             });
         });
         describe("add", function() {
@@ -71,6 +83,13 @@
         });
         describe("enabled", function() {
             it("should compare the slug to the map and indicate if the feature is enabled", function() {
+                var map0 = new FeatureMap({
+                    "Test" : [], "Test.version" : [], "Test.version.a" : [0]
+                });
+                expect(map0.enabled("Test", 1)).toBe(false);
+                expect(map0.enabled("Test.version", 1)).toBe(false);
+                expect(map0.enabled("Test.version.a", 1)).toBe(false);
+
                 var map1 = new FeatureMap({
                     "Test" : [1], "Test.version" : [1], "Test.version.a" : [1]
                 });
