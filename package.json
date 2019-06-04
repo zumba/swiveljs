@@ -30,7 +30,6 @@
     "grunt-contrib-jasmine": "gruntjs/grunt-contrib-jasmine#master",
     "grunt-contrib-jshint": "^1.1.0",
     "grunt-contrib-uglify": "^3.3.0",
-    "grunt-wrap": "^0.3.1",
-    "lodash": "^4.17.10"
+    "grunt-wrap": "^0.3.1"
   }
 }

@@ -1,13 +1,11 @@
 /*global module:false*/
 
-var _ = require('lodash');
-
 module.exports = function(grunt) {
     'use strict';
     var gruntConfig = { pkg : grunt.file.readJSON('package.json') };
 
     grunt.file.recurse('grunt/config', function(config) {
-        _.merge(gruntConfig, grunt.file.readJSON(config));
+        gruntConfig = Object.assign({}, gruntConfig, grunt.file.readJSON(config));
     });
 
     // Project configuration.
