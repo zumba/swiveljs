@@ -64,6 +64,25 @@ var combineMasks = function(data, featureMap) {
 };
 
 /**
+ * Return the existent fields in base that are missing in compared
+ *
+ * @param Object base
+ * @param Object compared
+ * @returns Object
+ */
+var diffMissing = function(base, compared) {
+    var data = {};
+    var key;
+
+    for (key in base) {
+      if (base.hasOwnProperty(key) && compared[key] === undefined) {
+        data[key] = base[key];
+      }
+    }
+    return data;
+};
+
+/**
  * Merge this map with another map and return a new one.
  *
  * Values in map param will be added to values in this instance. Any number of additional maps may
@@ -89,18 +108,12 @@ FeatureMapPrototype.add = function add(/* map1, map2, ... */) {
 FeatureMapPrototype.diff = function diff(featureMap) {
     var base = this.map;
     var compared = featureMap.map;
-    var data = {};
+    var data = Object.assign(diffMissing(compared, base), diffMissing(base, compared));
     var key;
 
     for (key in compared) {
         if (compared.hasOwnProperty(key) && (base[key] === undefined || base[key] !== compared[key])) {
             data[key] = compared[key];
-        }
-    }
-
-    for (key in base) {
-        if (base.hasOwnProperty(key) && compared[key] === undefined) {
-            data[key] = base[key];
         }
     }
 

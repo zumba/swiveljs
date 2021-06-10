@@ -23,6 +23,7 @@ var objectTypes = {
 };
 
 (function exportSwivel(root) {
+    /* jshint maxcomplexity: false */
 
     /**
      * Free variable exports
