@@ -1,7 +1,7 @@
 ;(function SwivelJS(undefined) {
     'use strict';
     /**
-     * SwivelJS v2.1.0 - 2022-07-24
+     * SwivelJS v2.1.1 - 2022-07-24
      * Strategy driven, segmented feature toggles
      *
      * Copyright (c) 2022 Zumba&reg;

@@ -1,6 +1,6 @@
 {
   "name": "swiveljs",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "Strategy driven, segmented feature toggles",
   "main": "dist/swivel.js",
   "license": "MIT",
