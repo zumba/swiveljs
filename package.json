@@ -4,7 +4,7 @@
   "description": "Strategy driven, segmented feature toggles",
   "main": "dist/swivel.js",
   "scripts": {
-    "test": "grunt test"
+    "test": "grunt && jasmine-browser-runner runSpecs --config=jasmine-browser.json"
   },
   "repository": {
     "type": "git",
@@ -24,13 +24,15 @@
   },
   "homepage": "https://github.com/zumba/swiveljs",
   "devDependencies": {
-    "grunt": "^1.2.0",
-    "grunt-cli": "^1.4.2",
-    "grunt-contrib-clean": "^2.0.0",
-    "grunt-contrib-concat": "^1.0.1",
-    "grunt-contrib-jasmine": "^2.2.0",
-    "grunt-contrib-jshint": "^3.0.0",
-    "grunt-contrib-uglify": "^5.0.0",
-    "grunt-wrap": "^0.3.1"
+    "grunt": "^1.5.3",
+    "grunt-cli": "^1.4.3",
+    "grunt-contrib-clean": "^2.0.1",
+    "grunt-contrib-concat": "^2.1.0",
+    "grunt-contrib-jasmine": "^3.0.0",
+    "grunt-contrib-jshint": "^3.2.0",
+    "grunt-contrib-uglify": "^5.2.2",
+    "grunt-wrap": "^0.3.1",
+    "jasmine-browser-runner": "^1.1.0",
+    "jasmine-core": "^4.3.0"
   }
 }
