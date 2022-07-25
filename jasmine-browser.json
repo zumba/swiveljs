@@ -1,0 +1,21 @@
+{
+  "srcDir": "dist",
+  "srcFiles": [
+    "**/*.js"
+  ],
+  "specDir": "test/spec",
+  "specFiles": [
+    "**/*[sS]pec.js"
+  ],
+  "helpers": [
+    "helpers/**/*.js"
+  ],
+  "env": {
+    "stopSpecOnExpectationFailure": false,
+    "stopOnSpecFailure": false,
+    "random": true
+  },
+  "browser": {
+    "name": "headlessChrome"
+  }
+}

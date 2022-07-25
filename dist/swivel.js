@@ -1,48 +1,45 @@
 ;(function SwivelJS(undefined) {
     'use strict';
     /**
-     * SwivelJS v2.1.0 - 2018-05-29
+     * SwivelJS v2.1.1 - 2022-07-24
      * Strategy driven, segmented feature toggles
      *
-     * Copyright (c) 2018 Zumba&reg;
+     * Copyright (c) 2022 Zumba&reg;
      * Licensed MIT
      */
-    /* jshint freeze: false */
-    /* jshint maxcomplexity: 9 */
-    
     // Production steps of ECMA-262, Edition 5, 15.4.4.21
     // Reference: http://es5.github.io/#x15.4.4.21
     if (!Array.prototype.reduce) {
-      Array.prototype.reduce = function(callback /*, initialValue*/) {
-        if (this === null || this === undefined) {
-          throw new TypeError('Array.prototype.reduce called on null or undefined');
-        }
-        if (typeof callback !== 'function') {
-          throw new TypeError(callback + ' is not a function');
-        }
-        var t = Object(this), len = t.length >>> 0, k = 0, value;
-        if (arguments.length === 2) {
-          value = arguments[1];
-        } else {
-          while (k < len && !(k in t)) {
-            k++;
+      Object.defineProperty(Array.prototype, 'reduce', {
+        value: function(callback /*, initialValue*/) {
+          /* jshint maxcomplexity: 10 */
+          if (this === null || this === undefined) {
+            throw new TypeError('Array.prototype.reduce called on null or undefined');
           }
-          if (k >= len) {
-            throw new TypeError('Reduce of empty array with no initial value');
+          if (typeof callback !== 'function') {
+            throw new TypeError(callback + ' is not a function');
           }
-          value = t[k++];
-        }
-        for (; k < len; k++) {
-          if (k in t) {
-            value = callback(value, t[k], k, t);
+          var t = Object(this), len = t.length >>> 0, k = 0, value;
+          if (arguments.length === 2) {
+            value = arguments[1];
+          } else {
+            while (k < len && !(k in t)) {
+              k++;
+            }
+            if (k >= len) {
+              throw new TypeError('Reduce of empty array with no initial value');
+            }
+            value = t[k++];
           }
+          for (; k < len; k++) {
+            if (k in t) {
+              value = callback(value, t[k], k, t);
+            }
+          }
+          return value;
         }
-        return value;
-      };
+      });
     }
-    
-    /* jshint freeze: true */
-    /* jshint maxcomplexity: 6 */
     
     /**
      * Delimiter
@@ -274,13 +271,16 @@
     };
     
     /**
-     * Used by reduceToBitmask
+     * Used by parse reducer
      *
      * @param Number mask
      * @param Number index
      * @return Number
      */
     var bitmaskIterator = function bitmaskIterator(mask, index) {
+        if (!index || parseInt(index, 10) === 0) {
+            return mask;
+        }
         return mask | 1 << --index;
     };
     
@@ -336,6 +336,25 @@
     };
     
     /**
+     * Return the existent fields in base that are missing in compared
+     *
+     * @param Object base
+     * @param Object compared
+     * @returns Object
+     */
+    var diffMissing = function(base, compared) {
+        var data = {};
+        var key;
+    
+        for (key in base) {
+          if (base.hasOwnProperty(key) && compared[key] === undefined) {
+            data[key] = base[key];
+          }
+        }
+        return data;
+    };
+    
+    /**
      * Merge this map with another map and return a new one.
      *
      * Values in map param will be added to values in this instance. Any number of additional maps may
@@ -361,18 +380,12 @@
     FeatureMapPrototype.diff = function diff(featureMap) {
         var base = this.map;
         var compared = featureMap.map;
-        var data = {};
+        var data = Object.assign(diffMissing(compared, base), diffMissing(base, compared));
         var key;
     
         for (key in compared) {
             if (compared.hasOwnProperty(key) && (base[key] === undefined || base[key] !== compared[key])) {
                 data[key] = compared[key];
-            }
-        }
-    
-        for (key in base) {
-            if (base.hasOwnProperty(key) && compared[key] === undefined) {
-                data[key] = base[key];
             }
         }
     
@@ -401,7 +414,7 @@
             key += key ? DELIMITER + child : child;
     
             var isMissing = !this.slugExists(key);
-            var isDisabled = isMissing || !(map[key] & index);
+            var isDisabled = isMissing || !(parseInt(map[key], 10) & index);
     
             if (isMissing || isDisabled) {
                 return false;
@@ -575,6 +588,7 @@
     };
     
     (function exportSwivel(root) {
+        /* jshint maxcomplexity: false */
     
         /**
          * Free variable exports
