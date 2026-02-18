@@ -1,6 +1,6 @@
 {
   "name": "swiveljs",
-  "version": "2.1.1",
+  "version": "2.1.4",
   "description": "Strategy driven, segmented feature toggles",
   "main": "dist/swivel.js",
   "scripts": {
