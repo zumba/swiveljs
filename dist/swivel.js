@@ -1,65 +1,31 @@
 ;(function SwivelJS(undefined) {
     'use strict';
     /**
-     * SwivelJS v2.1.4 - 2026-02-18
+     * SwivelJS v3.0.0 - 2026-05-15
      * Strategy driven, segmented feature toggles
      *
-     * Copyright (c) 2026 Zumba&reg;
+     * Copyright (c) 2026 Zumba®
      * Licensed MIT
      */
-    // Production steps of ECMA-262, Edition 5, 15.4.4.21
-    // Reference: http://es5.github.io/#x15.4.4.21
-    if (!Array.prototype.reduce) {
-      Object.defineProperty(Array.prototype, 'reduce', {
-        value: function(callback /*, initialValue*/) {
-          /* jshint maxcomplexity: 10 */
-          if (this === null || this === undefined) {
-            throw new TypeError('Array.prototype.reduce called on null or undefined');
-          }
-          if (typeof callback !== 'function') {
-            throw new TypeError(callback + ' is not a function');
-          }
-          var t = Object(this), len = t.length >>> 0, k = 0, value;
-          if (arguments.length === 2) {
-            value = arguments[1];
-          } else {
-            while (k < len && !(k in t)) {
-              k++;
-            }
-            if (k >= len) {
-              throw new TypeError('Reduce of empty array with no initial value');
-            }
-            value = t[k++];
-          }
-          for (; k < len; k++) {
-            if (k in t) {
-              value = callback(value, t[k], k, t);
-            }
-          }
-          return value;
-        }
-      });
-    }
-    
     /**
      * Delimiter
      *
      * @type String
      */
     var DELIMITER = '.';
-    
+
     /**
      * Native reduce
      *
      * @type Function
      */
     var reduce = Array.prototype.reduce;
-    
+
     /**
      * @type Function
      */
     var toString = Object.prototype.toString;
-    
+
     /**
      * Is array?
      *
@@ -69,8 +35,8 @@
     var isArray = function isArray(a) {
         return toString.call(a) === '[object Array]';
     };
-    
-    
+
+
     /**
      * Behavior constructor
      *
@@ -81,7 +47,7 @@
         this.slug = slug;
         this.strategy = strategy;
     };
-    
+
     /**
      * Execute the behavior's strategy and return the result
      *
@@ -91,8 +57,8 @@
     Behavior.prototype.execute = function execute(args) {
         return this.strategy.apply(null, args || []);
     };
-    
-    
+
+
     /**
      * Bucket constructor
      */
@@ -101,7 +67,7 @@
         this.index = index;
         this.callback = typeof callback === 'function' ? callback : function() {};
     };
-    
+
     /**
      * Check if a behavior is enabled for a particular context/bucket combination
      *
@@ -115,8 +81,8 @@
         }
         return this.featureMap.enabled(slug, this.index);
     };
-    
-    
+
+
     /**
      * Set the behavior and args.
      *
@@ -127,7 +93,7 @@
         this.behavior = behavior || null;
         this.args = args || [];
     };
-    
+
     /**
      * Builder constructor
      *
@@ -140,20 +106,20 @@
         this.waived = false;
         setBehavior.call(this);
     };
-    
+
     /**
      * Slug used when one is not provided
      *
      * @type String
      */
     var DEFAULT_SLUG = '__swivel_default';
-    
+
     /**
      * Builder prototype
      */
     var BuilderPrototype = Builder.prototype;
-    
-    
+
+
     /**
      * Add a behavior to be executed later.
      *
@@ -170,7 +136,7 @@
         }
         return this;
     };
-    
+
     /**
      * Add a value to be returned when the builder is executed.
      *
@@ -188,7 +154,7 @@
         }
         return this;
     };
-    
+
     /**
      * Add a default behavior.
      *
@@ -206,7 +172,7 @@
         }
         return this;
     };
-    
+
     /**
      * Add a default value.
      *
@@ -226,7 +192,7 @@
         }
         return this;
     };
-    
+
     /**
      * Execute the feature.
      *
@@ -236,7 +202,7 @@
         var behavior = this.behavior || this.getBehavior(function() { return null; });
         return behavior.execute(this.args || []);
     };
-    
+
     /**
      * Create and return a new Behavior.
      *
@@ -257,7 +223,7 @@
         slug = !slug ? this.slug : this.slug + DELIMITER + slug;
         return new Behavior(slug, strategy);
     };
-    
+
     /**
      * Waive the default behavior for this feature.
      */
@@ -269,7 +235,7 @@
         this.waived = true;
         return this;
     };
-    
+
     /**
      * Used by parse reducer
      *
@@ -283,7 +249,7 @@
         }
         return mask | 1 << --index;
     };
-    
+
     /**
      * Parse a human readable map into a map of bitmasks
      *
@@ -301,7 +267,7 @@
         }
         return parsed;
     };
-    
+
     /**
      * FeatureMap constructor
      *
@@ -310,12 +276,12 @@
     var FeatureMap = function FeatureMap(map) {
         this.map = parse(map);
     };
-    
+
     /**
      * FeatureMap prototype
      */
     var FeatureMapPrototype = FeatureMap.prototype;
-    
+
     /**
      * Used to reduce masks when adding maps.
      *
@@ -334,7 +300,7 @@
         }
         return data;
     };
-    
+
     /**
      * Return the existent fields in base that are missing in compared
      *
@@ -345,7 +311,7 @@
     var diffMissing = function(base, compared) {
         var data = {};
         var key;
-    
+
         for (key in base) {
           if (base.hasOwnProperty(key) && compared[key] === undefined) {
             data[key] = base[key];
@@ -353,7 +319,7 @@
         }
         return data;
     };
-    
+
     /**
      * Merge this map with another map and return a new one.
      *
@@ -366,7 +332,7 @@
     FeatureMapPrototype.add = function add(/* map1, map2, ... */) {
         return new FeatureMap(reduce.call(arguments, combineMasks, this.map));
     };
-    
+
     /**
      * Compare a FeatureMap to this instance and return a new FeatureMap.
      *
@@ -382,16 +348,16 @@
         var compared = featureMap.map;
         var data = Object.assign(diffMissing(compared, base), diffMissing(base, compared));
         var key;
-    
+
         for (key in compared) {
             if (compared.hasOwnProperty(key) && (base[key] === undefined || base[key] !== compared[key])) {
                 data[key] = compared[key];
             }
         }
-    
+
         return new FeatureMap(data);
     };
-    
+
     /**
      * Check if a feature slug is enabled for a particular bucket index
      *
@@ -406,23 +372,23 @@
         var length = list.length;
         var i = 0;
         var child;
-    
+
         index = 1 << index - 1;
-    
+
         for (; i < length; i++) {
             child = list[i];
             key += key ? DELIMITER + child : child;
-    
+
             var isMissing = !this.slugExists(key);
             var isDisabled = isMissing || !(parseInt(map[key], 10) & index);
-    
+
             if (isMissing || isDisabled) {
                 return false;
             }
         }
         return true;
     };
-    
+
     /**
      * Check if a feature slug exists in the Map.
      *
@@ -432,7 +398,7 @@
     FeatureMapPrototype.slugExists = function slugExists(slug) {
         return typeof this.map[slug] !== 'undefined';
     };
-    
+
     /**
      * Compare featureMap to this instance and return a new FeatureMap.
      *
@@ -446,7 +412,7 @@
         var compared = featureMap.map;
         var data = {};
         var key;
-    
+
         for (key in compared) {
             if (compared.hasOwnProperty(key) && base[key] === compared[key]) {
                 data[key] = compared[key];
@@ -454,7 +420,7 @@
         }
         return new FeatureMap(data);
     };
-    
+
     /**
      * Used to reduce masks when merging maps.
      *
@@ -472,7 +438,7 @@
         }
         return data;
     };
-    
+
     /**
      * Merge this map with another map and return a new FeatureMap
      *
@@ -485,8 +451,8 @@
     FeatureMapPrototype.merge = function merge(/* map1, map2, ... */) {
         return new FeatureMap(reduce.call(arguments, overwrite, this.map));
     };
-    
-    
+
+
     /**
      * Swivel constructor
      */
@@ -502,12 +468,12 @@
         var featureMap = map instanceof FeatureMap ? map : new FeatureMap(map);
         this.bucket = new Bucket(featureMap, config.bucketIndex, callback);
     };
-    
+
     /**
      * Swivel prototype
      */
     var SwivelPrototype = Swivel.prototype;
-    
+
     /**
      * Create a new Builder instance
      *
@@ -517,7 +483,7 @@
     SwivelPrototype.forFeature = function forFeature(slug) {
         return new Builder(slug, this.bucket);
     };
-    
+
     /**
      * Syntactic sugar for creating simple feature toggles (ternary style)
      *
@@ -533,7 +499,7 @@
             .defaultBehavior(b)
             .execute();
     };
-    
+
     /**
      * Syntactic sugar for creating simple feature toggles (ternary style)
      *
@@ -551,7 +517,7 @@
             .defaultValue(b)
             .execute();
     };
-    
+
     /**
      * Set the Swivel Bucket
      *
@@ -562,7 +528,7 @@
         this.bucket = bucket;
         return this;
     };
-    
+
     /**
      * Individual constructors
      */
@@ -570,13 +536,13 @@
     Swivel.Bucket = Bucket;
     Swivel.Builder = Builder;
     Swivel.FeatureMap = FeatureMap;
-    
+
     /**
      * Exports script adapted from lodash v2.4.1 Modern Build
      *
      * @see http://lodash.com/
      */
-    
+
     /**
      * Valid object type map
      *
@@ -586,31 +552,31 @@
         'function' : true,
         'object' : true
     };
-    
+
     (function exportSwivel(root) {
         /* jshint maxcomplexity: false */
-    
+
         /**
          * Free variable exports
          *
          * @type Function
          */
         var freeExports = objectTypes[typeof exports] && exports && !exports.nodeType && exports;
-    
+
         /**
          * Free variable module
          *
          * @type Object
          */
         var freeModule = objectTypes[typeof module] && module && !module.nodeType && module;
-    
+
         /**
          * CommonJS module.exports
          *
          * @type Function
          */
         var moduleExports = freeModule && freeModule.exports === freeExports && freeExports;
-    
+
         /**
          * Free variable `global`
          *
@@ -620,7 +586,7 @@
         if (freeGlobal && (freeGlobal.global === freeGlobal || freeGlobal.window === freeGlobal)) {
             root = freeGlobal;
         }
-    
+
         /**
          * Export
          */
@@ -637,5 +603,5 @@
             root.Swivel = Swivel;
         }
     }((objectTypes[typeof window] && window) || this));
-    
+
 }.call(this));
