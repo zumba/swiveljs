@@ -3,6 +3,10 @@
   "version": "2.1.4",
   "description": "Strategy driven, segmented feature toggles",
   "main": "dist/swivel.js",
+  "files": [
+    "dist",
+    "SECURITY.md"
+  ],
   "scripts": {
     "build": "node scripts/build.mjs",
     "lint": "eslint dist/swivel.js test scripts eslint.config.mjs",
