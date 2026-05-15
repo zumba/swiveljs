@@ -43,7 +43,7 @@ mkdirSync(join(root, 'dist'), { recursive: true });
 writeFileSync(join(root, 'dist/swivel.js'), output);
 console.log('Built dist/swivel.js');
 
-const minified = await minify(output, {
+const minified = await minify({ 'swivel.js': output }, {
     compress: { drop_console: true },
     mangle: true,
     format: { preamble: banner },

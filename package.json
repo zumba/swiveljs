@@ -10,7 +10,7 @@
   "scripts": {
     "build": "node scripts/build.mjs",
     "lint": "eslint dist/swivel.js test scripts eslint.config.mjs",
-    "test": "npm run build && vitest run"
+    "test": "npm run build && npm run lint && vitest run"
   },
   "repository": {
     "type": "git",
