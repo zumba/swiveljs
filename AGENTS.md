@@ -54,8 +54,8 @@ If you add another tooling script that needs `import`, give it an `.mjs` extensi
 
 ## Testing
 
-- **`npm test`** runs `npm run build && vitest run`. Always run this before reporting work complete; the test step depends on a fresh build.
-- **`npm run lint`** runs ESLint on `dist/swivel.js`, the `test/` and `scripts/` directories, and the ESLint config itself.
+- **`npm test`** runs `npm run build && npm run lint && vitest run`. Always run this before reporting work complete; the order matters because lint targets `dist/swivel.js`, which the build step produces.
+- **`npm run lint`** runs ESLint on `dist/swivel.js`, the `test/` and `scripts/` directories, and the ESLint config itself. CI invokes `npm test`, so lint is enforced end-to-end — don't bypass it locally.
 
 There are two layers of tests:
 
