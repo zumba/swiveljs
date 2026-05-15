@@ -4,8 +4,8 @@
   "description": "Strategy driven, segmented feature toggles",
   "main": "dist/swivel.js",
   "scripts": {
-    "build": "node scripts/build.js",
-    "lint": "eslint dist/swivel.js test",
+    "build": "node scripts/build.mjs",
+    "lint": "eslint dist/swivel.js test scripts eslint.config.mjs",
     "test": "npm run build && vitest run"
   },
   "repository": {
@@ -28,7 +28,6 @@
   "engines": {
     "node": ">=20"
   },
-  "type": "module",
   "devDependencies": {
     "@eslint/js": "^9.0.0",
     "eslint": "^9.0.0",
