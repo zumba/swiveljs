@@ -4,13 +4,19 @@ Guidance for AI coding agents (Claude Code, Cursor, Aider, etc.) working in this
 
 ## What this library is
 
-SwivelJS is a small, strategy-driven feature-toggle library distributed as a single UMD bundle (`dist/swivel.js`) and its minified counterpart (`dist/swivel.min.js`). It is consumed in three environments:
+SwivelJS is a small, strategy-driven feature-toggle library used on **both server (Node) and client (browser)**. It is distributed as a single UMD bundle (`dist/swivel.js`) and its minified counterpart (`dist/swivel.min.js`).
+
+Supported consumption paths — **every one is load-bearing**:
 
 - **CommonJS Node** via `require('swiveljs')` → returns the `Swivel` constructor (with `Behavior`/`Bucket`/`Builder`/`FeatureMap` attached as static properties).
 - **ESM Node** via `import Swivel from 'swiveljs'` → resolves through Node's CJS→ESM default-import interop on the same UMD `module.exports = Swivel`.
-- **Browser globals / AMD** via the same bundle's `define`/`window.Swivel` fallbacks.
+- **Browser `<script>` tag** loading `dist/swivel.js` or `dist/swivel.min.js` directly → sets `window.Swivel`.
+- **Browser via a bundler** (webpack, rollup, vite, esbuild) → bundlers consume the package using its CJS resolution and inline the UMD bundle.
+- **AMD loaders** (RequireJS, etc.) → the wrapper calls `define('Swivel', …)`.
 
-Every consumer path above is load-bearing. Do not break any of them without an explicit instruction.
+The library targets **modern browsers (ES2015+)**. The binding constraint is `Object.assign` in `FeatureMap.diff` — IE is **not** supported. Native browser ESM (`<script type="module">`) loading the dist file directly is **not** a supported path; browser ESM consumers must go through a bundler.
+
+Do not break any of the consumer paths above without an explicit instruction.
 
 ## Hard compatibility requirements
 
@@ -20,7 +26,7 @@ These are not preferences — they are tested invariants (`test/spec/Compatibili
 
 2. **Keep the license banner in both `dist/swivel.js` and `dist/swivel.min.js`.** The banner contains the version, build date, copyright, and license. The minified bundle's banner is added via Terser's `format.preamble` option in `scripts/build.mjs` — do not switch to a Terser invocation that omits this.
 
-3. **Keep the UMD wrapper in `src/export.js` intact.** The export-detection block (AMD → CommonJS → globals) is what makes the bundle work in every consumer environment. Don't "modernize" it to a single `export default Swivel`.
+3. **Keep the UMD wrapper in `src/export.js` intact.** The export-detection block (AMD → CommonJS → globals) is what makes the bundle work in every consumer environment. Don't "modernize" it to a single `export default Swivel`. In particular, the trailing `else { root.Swivel = Swivel; }` is the browser-`<script>` path — removing it silently breaks every direct-`<script>` consumer.
 
 4. **`new Swivel(...)` and `Swivel(...)` must both work.** The constructor self-`new`s when called without `new` — preserve that behavior.
 
@@ -54,13 +60,14 @@ If you add another tooling script that needs `import`, give it an `.mjs` extensi
 There are two layers of tests:
 
 - **Unit specs** (`test/spec/{Behavior,Bucket,Builder,FeatureMap,Swivel}.spec.js`) — verify library behavior via the in-process Vitest import. Convenient, but Vitest's transformer can hide consumption regressions.
-- **Compatibility spec** (`test/spec/Compatibility.spec.js`) — spawns a real `node` subprocess to load the dist bundles via ESM `import` and CJS `require()`, and checks that the banner is present. **This is the regression net** for items 1–3 above. If you touch `package.json`, `scripts/build.mjs`, or `src/export.js`, run this spec specifically.
+- **Compatibility spec** (`test/spec/Compatibility.spec.js`) — spawns a real `node` subprocess to load the dist bundles via ESM `import` and CJS `require()`, runs the bundle inside a simulated browser context (Node `vm` with `window` defined and no `module`/`exports`/`require`) to verify `window.Swivel` is set, and checks that the banner is present. **This is the regression net** for items 1–3 above. If you touch `package.json`, `scripts/build.mjs`, or `src/export.js`, run this spec specifically. The simulated-browser test catches UMD-branch logic regressions but is not a real browser — it does not exercise DOM behavior.
 
-## Node and toolchain
+## Runtime baselines and toolchain
 
-- Supported Node: `>=20` (declared in `package.json`'s `engines`).
+- **Node:** `>=20` (declared in `package.json`'s `engines`).
+- **Browsers:** modern only — ES2015+. The bundle uses `Object.assign` (in `FeatureMap.diff`) and `Array.prototype.reduce` natively, so IE 11 and older are explicitly **not** supported. Don't add code that raises the baseline further (no `??`, `?.`, `async`/`await`, native classes, etc.) in `src/**` without an explicit migration plan, because the bundle ships unchanged to browser consumers.
 - CI matrix lives in `.github/workflows/ci.yml`; the publish matrix lives in `.github/workflows/npm-publish.yml`. Keep them in sync with the engines field when raising the floor.
-- Source files target ES5-ish syntax (`var`, no arrow functions, no `let`/`const`) because the bundle ships unchanged to consumers who may transpile downstream. Do not convert source files to modern syntax. Tests and tooling are free to use modern syntax.
+- Source files target ES5-ish syntax (`var`, no arrow functions, no `let`/`const`, no template literals) for the same reason. Tests and tooling are free to use modern syntax.
 
 ## Style conventions
 

@@ -3,6 +3,7 @@ import { execFileSync } from 'child_process';
 import { readFileSync, existsSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
+import vm from 'vm';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, '../..');
@@ -67,5 +68,35 @@ describe('dist compatibility', () => {
         expect(content).toMatch(/SwivelJS v\d+\.\d+\.\d+/);
         expect(content).toMatch(/Copyright \(c\) \d{4} Zumba/);
         expect(content).toMatch(/Licensed MIT/);
+    });
+
+    const runInBrowserLikeContext = (path) => {
+        const code = readFileSync(path, 'utf8');
+        const window = {};
+        const context = vm.createContext({ window });
+        vm.runInContext(code, context);
+        return window;
+    };
+
+    it('dist/swivel.js attaches Swivel to window in a browser-like environment', () => {
+        const { Swivel } = runInBrowserLikeContext(distJs);
+        expect(typeof Swivel).toBe('function');
+        expect(typeof Swivel.Behavior).toBe('function');
+        expect(typeof Swivel.Bucket).toBe('function');
+        expect(typeof Swivel.Builder).toBe('function');
+        expect(typeof Swivel.FeatureMap).toBe('function');
+        const s = new Swivel({ map: { a: [1] }, bucketIndex: 1 });
+        expect(s.returnValue('a', 'on', 'off')).toBe('on');
+    });
+
+    it('dist/swivel.min.js attaches Swivel to window in a browser-like environment', () => {
+        const { Swivel } = runInBrowserLikeContext(distMin);
+        expect(typeof Swivel).toBe('function');
+        expect(typeof Swivel.Behavior).toBe('function');
+        expect(typeof Swivel.Bucket).toBe('function');
+        expect(typeof Swivel.Builder).toBe('function');
+        expect(typeof Swivel.FeatureMap).toBe('function');
+        const s = new Swivel({ map: { a: [1] }, bucketIndex: 1 });
+        expect(s.returnValue('a', 'on', 'off')).toBe('on');
     });
 });
