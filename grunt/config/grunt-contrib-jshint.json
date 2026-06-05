@@ -1,8 +1,0 @@
-{
-    "jshint" : {
-        "options" : {
-            "jshintrc" : ".jshintrc"
-        },
-        "source" : ["./gruntfile.js", "test/**/*.js", "dist/swivel.js"]
-    }
-}

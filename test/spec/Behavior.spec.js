@@ -1,21 +1,16 @@
-/* globals Swivel */
-;(function() {
-    "use strict";
+import { describe, it, expect, vi } from 'vitest';
+import Swivel from '../../dist/swivel.js';
 
-    /**
-     * Behavior test suite
-     */
-    describe("Behavior", function() {
-        var Behavior = Swivel.Behavior;
+const Behavior = Swivel.Behavior;
 
-        describe("execute", function() {
-            it("should call the strategy with the arguments provided", function() {
-                var strategy = jasmine.createSpy("strategy").and.returnValue(123);
-                var behavior = new Behavior("test", strategy);
+describe('Behavior', () => {
+    describe('execute', () => {
+        it('should call the strategy with the arguments provided', () => {
+            const strategy = vi.fn().mockReturnValue(123);
+            const behavior = new Behavior('test', strategy);
 
-                expect(behavior.execute(["a", "b"])).toBe(123);
-                expect(strategy).toHaveBeenCalledWith("a", "b");
-            });
+            expect(behavior.execute(['a', 'b'])).toBe(123);
+            expect(strategy).toHaveBeenCalledWith('a', 'b');
         });
     });
-}());
+});
