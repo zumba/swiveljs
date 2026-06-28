@@ -1,7 +1,7 @@
 ;(function SwivelJS(undefined) {
     'use strict';
     /**
-     * SwivelJS v3.0.0 - 2026-05-15
+     * SwivelJS v3.0.0 - 2026-06-28
      * Strategy driven, segmented feature toggles
      *
      * Copyright (c) 2026 Zumba®
@@ -247,7 +247,7 @@
         if (!index || parseInt(index, 10) === 0) {
             return mask;
         }
-        return mask | 1 << --index;
+        return mask | 1 << (index - 1);
     };
 
     /**

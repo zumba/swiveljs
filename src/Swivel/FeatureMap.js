@@ -9,7 +9,7 @@ var bitmaskIterator = function bitmaskIterator(mask, index) {
     if (!index || parseInt(index, 10) === 0) {
         return mask;
     }
-    return mask | 1 << --index;
+    return mask | 1 << (index - 1);
 };
 
 /**
